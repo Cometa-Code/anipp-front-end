@@ -31,7 +31,7 @@ export default {
         login() {
             if (this.loginData.user.length > 0 && this.loginData.password.length > 0 && !this.request) {
                 this.request = true;
-                this.notify('Validando dados de login...', 'info');
+                this.notify('Validando dados de login!', 'info');
 
                 this.$axios.post('user/login', {
                     user: this.loginData.user,
@@ -51,7 +51,22 @@ export default {
             }
         },
         recoverPassword() {
-            console.log("Solicitação enviada");
+            if (this.loginData.user.length > 0 && !this.request) {
+                this.request = true;
+                this.notify('Validando dados do usuário!', 'info');
+
+                this.$axios.post('user/recover-password', {
+                    user: this.loginData.user
+                })
+                .then(res => {
+                    this.request = false;
+                    return this.notify(res.data.message, 'success');
+                })
+                .catch(err => {
+                    this.request = false;
+                    return this.notify(err.response.data.message, 'error');
+                })
+            }
         },
     },
     components: { Input, Button }

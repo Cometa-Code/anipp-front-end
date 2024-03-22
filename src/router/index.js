@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 
 const routes = [
   { path: '/:pathMatch(.*)*', redirect: '/acessar' },
@@ -13,6 +14,11 @@ const routes = [
     path: '/inicio',
     name: 'Inicio',
     component: DashboardView
+  },
+  {
+    path: '/recuperar-senha',
+    name: 'Recuperar Senha',
+    component: RecoverPasswordView
   },
 ]
 
