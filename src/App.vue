@@ -1,30 +1,43 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
   <router-view/>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Variáveis globais */
+:root {
+  --primary-color: #C0AB61;
+  --secondary-color: #383838;
+  --white-color: #FFFFFF;
 }
 
-nav {
-  padding: 30px;
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: 'Montserrat';
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+/* Variáveis */
+.mt-1 {
+  margin-top: 10px;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+.mt-1p5 {
+  margin-top: 15px;
+}
+
+.mt-2 {
+  margin-top: 20px;
+}
+
+.mt-2p5 {
+  margin-top: 25px;
+}
+
+.mt-3 {
+  margin-top: 30px;
 }
 </style>

@@ -1,25 +1,36 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import DashboardView from '../views/DashboardView.vue'
+import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 
 const routes = [
+  { path: '/:pathMatch(.*)*', redirect: '/acessar' },
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: '/acessar',
+    name: 'Acessar',
+    component: LoginView
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/inicio',
+    name: 'Inicio',
+    component: DashboardView
+  },
+  {
+    path: '/recuperar-senha',
+    name: 'Recuperar Senha',
+    component: RecoverPasswordView
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  console.log(to);
+  document.title = `${to.name} - ANIPP` || 'ANIPP';
+  next();
+});
 
 export default router
