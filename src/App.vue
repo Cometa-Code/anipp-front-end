@@ -20,6 +20,15 @@
   font-family: 'Montserrat';
 }
 
+a,
+router-link {
+  text-decoration: none;
+}
+
+body{
+  overflow: hidden;
+}
+
 /* Variáveis */
 .mt-1 {
   margin-top: 10px;
