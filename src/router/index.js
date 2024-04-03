@@ -35,6 +35,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.fullPath === "/") {
+    next('/acessar');
+  }
+
   document.title = `${to.name} - ANIPP` || 'ANIPP';
   next();
 });
