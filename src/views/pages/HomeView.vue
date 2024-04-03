@@ -2,6 +2,15 @@
 import Card from "@/components/Card.vue";
 
 export default {
+    created() {
+        this.$axios.get('/user')
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    },
     components: { Card }
 }
 </script>
