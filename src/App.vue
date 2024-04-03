@@ -1,3 +1,45 @@
+<script>
+import axios from 'axios';
+
+export default {
+  created() {
+    axios.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('UAUTHTKKEY');
+  
+        if (!token) {
+          this.$router.push('/login')
+        }
+  
+        config.headers.Authorization = `Bearer ${token}`;
+  
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    axios.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+      async (error) => {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('UAUTHTKKEY');
+
+          await router.push('/login');
+
+          return Promise.reject();
+        }
+
+        return Promise.reject(error);
+      }
+    );
+  },
+}
+</script>
+
 <template>
   <router-view/>
 </template>
@@ -18,6 +60,15 @@
   padding: 0px;
   box-sizing: border-box;
   font-family: 'Montserrat';
+}
+
+a,
+router-link {
+  text-decoration: none;
+}
+
+body{
+  overflow: hidden;
 }
 
 /* Variáveis */

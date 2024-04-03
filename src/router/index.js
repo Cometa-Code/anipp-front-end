@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import HomeView from '../views/pages/HomeView.vue'
 import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 
 const routes = [
@@ -11,9 +12,15 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/inicio',
-    name: 'Inicio',
-    component: DashboardView
+    path: '/',
+    component: DashboardView,
+    children: [
+      {
+        path: '/inicio',
+        name: 'Página Inicial',
+        component: HomeView
+      }
+    ]
   },
   {
     path: '/recuperar-senha',
@@ -28,7 +35,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to);
+  if (to.fullPath === "/") {
+    next('/acessar');
+  }
+
   document.title = `${to.name} - ANIPP` || 'ANIPP';
   next();
 });
