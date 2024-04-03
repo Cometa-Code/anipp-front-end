@@ -1,11 +1,31 @@
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
 export default {
     data() {
         return {
             mobileLateralNavbarIsActive: false,
+            userData: null,
+            loader: true,
         }
     },
+    created() {
+        this.$axios.get('/user')
+        .then(res => {
+            this.userData = res.data;
+            this.loader = false;
+        })
+        .catch(err => {
+            this.notify('Erro ao buscar usuário!', 'error');
+        });
+    },
     methods: {
+        notify(text, type) {
+            toast(text, {
+                "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
+            });
+        },
         openMobileLateralNavBar() {
             const mobileLateralNavbar =  document.getElementById("lateral-nav-bar");
 
@@ -54,9 +74,63 @@ export default {
             </section>
         </section>
 
-        <section class="center-content">
+        <section v-if="!loader" class="center-content">
             <section id="lateral-nav-bar" class="lateral-nav-bar">
-                <header>
+                <!-- Barra lateral de administradores -->
+                <header v-if="userData.role != 'associate'">
+                    <h2>Painel de administradores:</h2>
+
+                    <div @click="!mobileLateralNavbarIsActive ? openMobileLateralNavBar() : closeMobileLateralNavBar()" class="open-close-modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </div>
+                </header>
+
+                <nav v-if="userData.role != 'associate'">
+                    <div class="active">
+                        <router-link id="first-router-link" class="router-link" to="/inicio">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                            </svg>
+
+                            <p>Página inicial</p>
+                        </router-link>
+                    </div>
+
+                    <div>
+                        <router-link class="router-link" to="/inicio">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                            </svg>
+
+                            <p>Associados</p>
+                        </router-link>
+                    </div>
+
+                    <div>
+                        <router-link class="router-link" to="/inicio">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
+                            </svg>
+
+                            <p>Fluxo de caixa</p>
+                        </router-link>
+                    </div>
+
+                    <div>
+                        <router-link class="router-link" to="/gerenciar-informes">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
+                            </svg>
+
+                            <p>Gerenciar informes</p>
+                        </router-link>
+                    </div>
+                </nav>
+
+                <!-- Barra lateral dos associados -->
+                <header v-if="userData.is_associate">
                     <h2>Painel de associados:</h2>
 
                     <div @click="!mobileLateralNavbarIsActive ? openMobileLateralNavBar() : closeMobileLateralNavBar()" class="open-close-modal">
@@ -66,8 +140,8 @@ export default {
                     </div>
                 </header>
 
-                <nav>
-                    <div class="active">
+                <nav v-if="userData.is_associate">
+                    <div class="active" v-if="userData.role == 'associate'">
                         <router-link id="first-router-link" class="router-link" to="/inicio">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -100,7 +174,7 @@ export default {
             </section>
 
             <section class="center-content-section">
-                <router-view/>
+                <router-view :userData="userData"/>
             </section>
         </section>
     </section>
@@ -172,6 +246,10 @@ export default {
     margin-right: 20px;
     margin-bottom: 14px;
     color: #3a3a3a;
+}
+
+.center-content .lateral-nav-bar nav {
+    margin-bottom: 20px;
 }
 
 .center-content .lateral-nav-bar nav div {

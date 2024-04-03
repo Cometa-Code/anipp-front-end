@@ -1,15 +1,23 @@
 <script>
 import Card from "@/components/Card.vue";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
+    props: {
+        userData: {
+            type: Object
+        }
+    },
     created() {
-        this.$axios.get('/user')
-        .then(res => {
-            console.log(res);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        console.log(this.userData);
+    },
+    methods: {
+        notify(text, type) {
+            toast(text, {
+                "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
+            });
+        },
     },
     components: { Card }
 }
@@ -25,16 +33,17 @@ export default {
             <h1>
                 Olá, 
                 <span>
-                    Vitor Barroso!
+                    {{ userData.name }}
                 </span>
             </h1>
 
-            <p>Você está no painel de associados da ANIPP.</p>
+            <p>Você está no painel de {{ userData.role == 'associate' ? 'associados' : 'administradores' }} da ANIPP.</p>
             <p>Selecione uma opção para prosseguir!</p>
         </section>
 
         <section class="home-view-cards">
-            <div class="card">
+            <!-- Cards Associados -->
+            <div v-if="userData.is_associate" class="card">
                 <Card 
                     title="Gerenciar perfil" 
                     description="Gerencie o seu perfil, altere seus dados e configure seus dependentes."
@@ -44,7 +53,7 @@ export default {
                 />
             </div>
 
-            <div class="card">
+            <div v-if="userData.is_associate" class="card">
                 <Card 
                     title="Meu financeiro" 
                     description="Acompanhe sua vida financeira na associação."
@@ -54,13 +63,44 @@ export default {
                 />
             </div>
 
-            <div class="card">
+            <div v-if="userData.is_associate" class="card">
                 <Card 
                     title="Acompanhe os informes" 
                     description="Veja os informes da associação e fique por dentro de tudo que acontece."
                     redirect-title="Ver informes"
                     redirectPage="/informes"
                     icon="newspaper"
+                />
+            </div>
+
+            <!-- Cards Administradores -->
+            <div v-if="userData.role != 'associate'" class="card">
+                <Card 
+                    title="Ver associados" 
+                    description="Acompanhe os associados e a vida financeira através de históricos de pagamentos."
+                    redirect-title="Ver informes"
+                    redirectPage="/informes"
+                    icon="users"
+                />
+            </div>
+
+            <div v-if="userData.role != 'associate'" class="card">
+                <Card 
+                    title="Fluxo de caixa" 
+                    description="Acompanhe e gerencie o fluxo de caixa da associação."
+                    redirect-title="Ver informes"
+                    redirectPage="/informes"
+                    icon="dollar"
+                />
+            </div>
+
+            <div v-if="userData.role != 'associate'" class="card">
+                <Card 
+                    title="Gerenciar informes" 
+                    description="Gerencie os informes da associação. Adicione e exclua informes."
+                    redirect-title="Ver informes"
+                    redirectPage="/informes"
+                    icon="table-cells"
                 />
             </div>
         </section>
