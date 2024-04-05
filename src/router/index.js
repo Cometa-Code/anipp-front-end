@@ -19,7 +19,12 @@ const routes = [
         path: '/inicio',
         name: 'Página Inicial',
         component: HomeView
-      }
+      },
+      {
+        path: '/inicio',
+        name: 'Página Inicial',
+        component: HomeView
+      },
     ]
   },
   {
