@@ -79,7 +79,7 @@ export default {
                     title="Ver associados" 
                     description="Acompanhe os associados e a vida financeira através de históricos de pagamentos."
                     redirect-title="Ver associados"
-                    redirectPage="/ver-associados"
+                    redirectPage="/associados"
                     icon="users"
                 />
             </div>

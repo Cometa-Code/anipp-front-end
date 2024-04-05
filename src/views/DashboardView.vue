@@ -133,7 +133,7 @@ export default {
                 <header v-if="userData.is_associate">
                     <h2>Painel de associados:</h2>
 
-                    <div @click="!mobileLateralNavbarIsActive ? openMobileLateralNavBar() : closeMobileLateralNavBar()" class="open-close-modal">
+                    <div v-if="userData.role == 'associate'" @click="!mobileLateralNavbarIsActive ? openMobileLateralNavBar() : closeMobileLateralNavBar()" class="open-close-modal">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
