@@ -39,7 +39,7 @@ export default {
                 <th v-if="hasActions" class="table-head-item">Ações</th>
             </tr>
 
-            <tr v-for="(item, index) in contents" class="table-content table-content-item-gray">
+            <tr v-for="(item, index) in contents" :class="[(index % 2) === 0 ? 'table-content-item-gray' : '', 'table-content']">
                 <td v-for="itemData in item" class="table-content-item">{{ itemData }}</td>
                 <td v-if="hasActions" class="table-content-item">
                     <div class="see-associates-action-icons">
@@ -84,13 +84,13 @@ export default {
 
 .table-head-item {
     border-bottom: 1px solid rgb(165, 165, 165);
-    height: 46px;
+    height: 55px;
     color: #2E2E2E;
     font-weight: 650;
 }
 
 .table-content-item-gray {
-    background-color: rgb(232, 232, 232);
+    background-color: rgb(237, 237, 237);
 }
 
 .table-head-item, .table-content-item {

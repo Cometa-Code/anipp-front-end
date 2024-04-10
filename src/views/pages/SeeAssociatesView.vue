@@ -10,7 +10,7 @@ export default {
         return {
             loadingTable: true,
             hasNextPage: false,
-            itemsPerPage: 1,
+            itemsPerPage: 10,
             actualPage: 0,
             totalItems: 0,
             associateTableCategories: [
@@ -132,6 +132,7 @@ export default {
     <section class="bg-see-associates">
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
+        <Button type="primary" placeholder="+ Adicionar associado" />
 
         <Table v-if="!loadingTable" :hasActions="true" :actions="associatesTableActions" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="associates" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
     </section>
@@ -140,8 +141,8 @@ export default {
 <style scoped>
 .bg-see-associates {
     width: 100%;
-    height: 100vh;
-    margin-bottom: 100px;
+    height: auto;
+    margin-bottom: 150px;
 }
 
 .bg-see-associates #see-associates-total {
