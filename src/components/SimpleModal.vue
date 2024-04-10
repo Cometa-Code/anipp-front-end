@@ -56,7 +56,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    height: 0;
+    max-height: 100%;
     z-index: 11;
     display: flex;
     align-items: center;
@@ -66,6 +66,7 @@ export default {
     transform: translate(-50%, -50%);
     margin-top: -100px !important;
     width: 100%;
+    overflow-x: auto;
 }
 
 .simple-modal {
@@ -73,6 +74,8 @@ export default {
     max-width: 98%;
     height: auto;
     position: relative;
+    margin-top: 60px;
+    margin-bottom: 20px;
 }
 
 .simple-modal header {

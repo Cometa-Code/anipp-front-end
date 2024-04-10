@@ -1,6 +1,7 @@
 <script>
 import Head from '@/components/Head';
 import Table from '@/components/Table';
+import Button from '@/components/Button';
 import SimpleModal from '@/components/SimpleModal';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -96,7 +97,7 @@ export default {
             }
         }
     },
-    components: { Head, Table, SimpleModal }
+    components: { Head, Table, SimpleModal, Button }
 }
 </script>
 
@@ -132,7 +133,9 @@ export default {
     <section class="bg-see-associates">
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
-        <Button type="primary" placeholder="+ Adicionar associado" />
+        <div v-if="!loadingTable" class="button-add-associate">
+            <Button type="primary" placeholder="+ Adicionar associado" />
+        </div>
 
         <Table v-if="!loadingTable" :hasActions="true" :actions="associatesTableActions" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="associates" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
     </section>
@@ -155,6 +158,12 @@ export default {
 .bg-see-associates #see-associates-total #see-associates-total-number {
     color: rgb(0, 123, 255);
     font-weight: 600;
+}
+
+.button-add-associate {
+    width: 300px;
+    max-width: 100%;
+    margin-bottom: 20px;
 }
 
 .associate-infos-simple-modal {
