@@ -30,6 +30,7 @@ export default {
             associatesFullInfos: [],
             selectedAssociate: null,
             modalAssociateInfos: false,
+            modalAddAssociate: false,
         }
     },
     props: {
@@ -95,6 +96,9 @@ export default {
                     }
                 }
             }
+        },
+        closeAddAssociateModal() {
+            this.modalAddAssociate = false;
         }
     },
     components: { Head, Table, SimpleModal, Button }
@@ -130,6 +134,18 @@ export default {
         </div>
     </SimpleModal>
 
+    <!-- <section class="bg-add-associate">
+        <Head title="Criar associado" />
+
+        <div @click="closeAddAssociateModal" class="close-add-associate">
+            x
+        </div>
+
+        <section class="form-add-associate">
+            
+        </section>
+    </section> -->
+
     <section class="bg-see-associates">
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
@@ -142,6 +158,26 @@ export default {
 </template>
 
 <style scoped>
+.bg-add-associate {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-y: auto;
+    padding: 0px 30px;
+}
+
+.bg-add-associate .close-add-associate {
+    position: absolute;
+    top: 22px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 .bg-see-associates {
     width: 100%;
     height: auto;
