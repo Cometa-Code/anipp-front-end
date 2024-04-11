@@ -2,6 +2,8 @@
 import Head from '@/components/Head';
 import Table from '@/components/Table';
 import Button from '@/components/Button';
+import Input from '@/components/Input';
+import Select from '@/components/Select';
 import SimpleModal from '@/components/SimpleModal';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -39,6 +41,10 @@ export default {
         }
     },
     created() {
+        if (this.userData.role == 'associate') {
+            this.$router.push('/inicio');
+        }
+
         this.getNextPage();
     },
     methods: {
@@ -101,7 +107,7 @@ export default {
             this.modalAddAssociate = false;
         }
     },
-    components: { Head, Table, SimpleModal, Button }
+    components: { Head, Table, SimpleModal, Button, Input, Select }
 }
 </script>
 
@@ -134,7 +140,7 @@ export default {
         </div>
     </SimpleModal>
 
-    <!-- <section class="bg-add-associate">
+    <section class="bg-add-associate">
         <Head title="Criar associado" />
 
         <div @click="closeAddAssociateModal" class="close-add-associate">
@@ -142,9 +148,51 @@ export default {
         </div>
 
         <section class="form-add-associate">
-            
+            <div class="form-add-associate-line">
+                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" />
+                <div class="form-add-associate-line-space"></div>
+                <Select type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="CEP" placeholder="xxxxx-xxx" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="DDD Telefônico" placeholder="11" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número de telefone" placeholder="99999-9999" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Conta bancária" placeholder="1578468-2" />
+            </div>
         </section>
-    </section> -->
+    </section>
 
     <section class="bg-see-associates">
         <Head title="Associados" />
@@ -176,6 +224,19 @@ export default {
     right: 30px;
     cursor: pointer;
     font-size: 18px;
+}
+
+.form-add-associate .form-add-associate-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1600px;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+
+.form-add-associate .form-add-associate-line .form-add-associate-line-space {
+    margin: 0px 10px;
 }
 
 .bg-see-associates {
