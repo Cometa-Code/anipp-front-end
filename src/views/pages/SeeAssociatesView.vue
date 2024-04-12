@@ -33,6 +33,7 @@ export default {
             selectedAssociate: null,
             modalAssociateInfos: false,
             modalAddAssociate: false,
+            addAssociateRoleSelect: [],
         }
     },
     props: {
@@ -44,6 +45,34 @@ export default {
         if (this.userData.role == 'associate') {
             this.$router.push('/inicio');
         }
+
+        if (this.userData.role == 'superadmin') {
+            this.addAssociateRoleSelect.push(
+                {
+                    name: 'Super Administrador',
+                    value: 'superadmin',
+                    selected: false
+                },
+                {
+                    name: 'Associado e Administrador',
+                    value: 'adminandassociate',
+                    selected: false
+                },
+                {
+                    name: 'Administrador',
+                    value: 'admin',
+                    selected: false
+                },
+            );
+        }
+
+        this.addAssociateRoleSelect.push(
+            {
+                name: 'Associado',
+                value: 'associate',
+                selected: true
+            }
+        );
 
         this.getNextPage();
     },
@@ -153,7 +182,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" />
                 <div class="form-add-associate-line-space"></div>
-                <Select type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" />
+                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" />
             </div>
 
             <div class="form-add-associate-line">

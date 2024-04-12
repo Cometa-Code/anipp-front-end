@@ -7,9 +7,9 @@ export default {
         label: {
             type: String
         },
-        modelValue: {
-            type: String
-        }
+        options: {
+            type: Object
+        },
     },
     emits: ["update:modelValue"],
     data() {
@@ -19,13 +19,7 @@ export default {
     },
     methods: {
         emitContent(event) {
-            if (this.onlyNumbers) {
-                const newValue = event.target.value.replace(/\D/g, '');
-                event.target.value = newValue;
-                this.$emit('update:modelValue', newValue);
-            } else {
-                this.$emit('update:modelValue', event.target.value);
-            }
+            console.log(event.target.value);
         },
     }
 }
@@ -35,7 +29,9 @@ export default {
     <section class="bg-input">
         <label :for="inputName" class="label-input">{{ label }}</label>
 
-        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue">
+        <select :name="inputName" @input="emitContent" class="input">
+            <option v-for="(option, index) in options" :value="option.value" :key="option.value" :selected="option.selected === true">{{ option.name }}</option>
+        </select>
     </section>
 </template>
 
