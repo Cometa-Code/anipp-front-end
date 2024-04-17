@@ -29,52 +29,10 @@ export default {
                 'Total pago',
                 'Observações',
             ],
-            payments: [
-                [
-                    'PIX',
-                    'Mensalidade',
-                    '17/04/2024',
-                    'R$ 300,00',
-                    'R$ 0,00',
-                    'R$ 0,00',
-                    'R$ 100,00',
-                    'R$ 400,00',
-                    '',
-                ],
-                [
-                    'PIX',
-                    'Mensalidade',
-                    '17/03/2024',
-                    'R$ 300,00',
-                    'R$ 0,00',
-                    'R$ 0,00',
-                    'R$ 100,00',
-                    'R$ 400,00',
-                    'Pagamento realizado com a sobra dos valores pagos pela Suzana Amaral',
-                ],
-                [
-                    'Trasferência',
-                    'Mensalidade',
-                    '17/02/2024',
-                    'R$ 300,00',
-                    'R$ 0,00',
-                    'R$ 0,00',
-                    'R$ 100,00',
-                    'R$ 400,00',
-                    '',
-                ],
-                [
-                    'Transferência',
-                    'Mensalidade',
-                    '17/01/2024',
-                    'R$ 300,00',
-                    'R$ 100,00',
-                    'R$ 0,00',
-                    'R$ 100,00',
-                    'R$ 500,00',
-                    '',
-                ],
-            ]
+            totalSumPayments: 0,
+            financial_situation: '',
+            payments: [],
+            paymentsFullInfos: [],
         }
     },
     props: {
@@ -100,29 +58,35 @@ export default {
 
             this.$axios.get(`/payments?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
             .then(res => {
-                if (!res.data) {
-                    return 
+                if (!res.data.data) {
+                    return this.notify('Ocorreu um erro ao buscar o financeiro do usuário', res.data)
                 };
                 const data = res.data.data;
-                console.log(data);
-
+                
                 this.actualPage += 1;
+                
+                this.totalItems = data.data.total;
+                
+                data.data.next_page_url == null ? this.hasNextPage = false : this.hasNextPage = true;
+                
+                this.totalSumPayments = data.totalSumPayments;
+                this.financial_situation = data.financial_situation;
 
-                this.totalItems = data.total;
+                data.data.data.forEach((item) => {
+                    let payments = [];
 
-                data.next_page_url == null ? this.hasNextPage = false : this.hasNextPage = true;
+                    payments.push(item.payment_method); 
+                    payments.push(item.payment_type);
+                    payments.push(item.payment_date);
+                    payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
+                    payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
+                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
+                    payments.push(`R$ ${item.fees.replace('.', ',')}`);
+                    payments.push(`R$ ${parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)}`);
+                    payments.push(item.comments);
 
-                data.data.forEach((item) => {
-                    let associateData = [];
-
-                    associateData.push(item.name); 
-                    associateData.push(item.email);
-                    associateData.push(item.document_cpf);
-                    associateData.push(item.registration_number);
-                    associateData.push(item.financial_situation);
-
-                    this.associates.push(associateData);
-                    this.associatesFullInfos.push(item);
+                    this.payments.push(payments);
+                    this.paymentsFullInfos.push(item);
                 });
 
                 this.loadingTable = false;
@@ -149,10 +113,10 @@ export default {
     <section class="bg-see-associates">
         <Head title="Vida Financeira" />
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span class="green">{{ totalItems }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
 
-        <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
+        <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
     </section>
 </template>
 
