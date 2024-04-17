@@ -84,9 +84,9 @@ export default {
                 <h2 v-if="recoverPasswordView">Recupere sua senha</h2>
             </section>
             <section id="form-access-inputs">
-                <Input label="Digite seu CPF:" type="text" placeholder="00000000000" inputName="document" :onlyNumbers="true" v-model="loginData.user" />
+                <Input label="Digite seu CPF:" type="text" placeholder="00000000000" inputName="document" :onlyNumbers="true" :value="loginData.user" v-model="loginData.user" />
                 
-                <Input v-if="!recoverPasswordView" label="Digite sua senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="password" :onlyNumbers="false" v-model="loginData.password" class="mt-1p5" />
+                <Input v-if="!recoverPasswordView" label="Digite sua senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="password" :onlyNumbers="false" :value="loginData.password" v-model="loginData.password" class="mt-1p5" />
 
                 <Button v-if="!recoverPasswordView" type="primary" placeholder="Conecte-se" class="mt-3" @buttonPressed="login" />
                 <Button v-if="recoverPasswordView" type="primary" placeholder="Solicitar recuperação" class="mt-3" @buttonPressed="recoverPassword" />

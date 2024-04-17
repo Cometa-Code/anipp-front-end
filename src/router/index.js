@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import HomeView from '../views/pages/HomeView.vue'
 import SeeAssociatesView from '../views/pages/SeeAssociatesView.vue'
+import FinancialLifeView from '../views/pages/FinancialLifeView.vue'
 import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 
 const routes = [
@@ -25,6 +26,11 @@ const routes = [
         path: '/associados',
         name: 'Associados',
         component: SeeAssociatesView
+      },
+      {
+        path: '/vida-financeira',
+        name: 'Vida Financeira',
+        component: FinancialLifeView
       },
     ]
   },

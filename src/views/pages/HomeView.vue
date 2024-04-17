@@ -58,7 +58,7 @@ export default {
                     title="Meu financeiro" 
                     description="Acompanhe sua vida financeira na associação."
                     redirect-title="Ver vida financeira"
-                    redirectPage="/financeiro-associado"
+                    redirectPage="/vida-financeira"
                     icon="wallet"
                 />
             </div>

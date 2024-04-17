@@ -98,9 +98,9 @@ export default {
                 <h2>Recupere sua senha</h2>
             </section>
             <section id="form-access-inputs">
-                <Input label="Digite sua nova senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="document" :onlyNumbers="false" v-model="recoverPassword.password" @update:modelValue="checkPassword"  />
+                <Input label="Digite sua nova senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="document" :onlyNumbers="false" :value="recoverPassword.password" v-model="recoverPassword.password" @update:modelValue="checkPassword"  />
                 
-                <Input label="Repita sua nova senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="confirmPassword" :onlyNumbers="false" v-model="recoverPassword.passwordConfirmation" @update:modelValue="checkPassword" class="mt-1p5" />
+                <Input label="Repita sua nova senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="confirmPassword" :onlyNumbers="false" :value="recoverPassword.passwordConfirmation" v-model="recoverPassword.passwordConfirmation" @update:modelValue="checkPassword" class="mt-1p5" />
 
                 <section id="confirmations-secure-password" class="mt-1p5">
                     <p :class="samePasswords ? 'active-confirmation' : 'non-confirmation'">As senhas serem iguais</p>
