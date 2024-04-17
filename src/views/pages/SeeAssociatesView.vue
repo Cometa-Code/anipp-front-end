@@ -4,6 +4,7 @@ import Table from '@/components/Table';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Select from '@/components/Select';
+import Loader from '@/components/Loader';
 import SimpleModal from '@/components/SimpleModal';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -11,6 +12,7 @@ import 'vue3-toastify/dist/index.css';
 export default {
     data() {
         return {
+            loader: false,
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -34,6 +36,92 @@ export default {
             modalAssociateInfos: false,
             modalAddAssociate: false,
             addAssociateRoleSelect: [],
+            addAssociateNationalitySelect: [
+                {
+                    name: 'Brasileiro',
+                    value: 'Brasileiro',
+                    selected: true,
+                },
+                {
+                    name: 'Estrangeiro',
+                    value: 'Estrangeiro',
+                    selected: false,
+                },
+                {
+                    name: 'Indefinido',
+                    value: 'Indefinido',
+                    selected: false,
+                },
+            ],
+            addAssociateMaritalSelect: [
+                {
+                    name: 'Indefinido',
+                    value: 'Indefinido',
+                    selected: true,
+                },
+                {
+                    name: 'Solteiro',
+                    value: 'Solteiro',
+                    selected: false,
+                },
+                {
+                    name: 'Casado',
+                    value: 'Casado',
+                    selected: false,
+                },
+                {
+                    name: 'Viúvo',
+                    value: 'Viuvo',
+                    selected: false,
+                },
+                {
+                    name: 'Separado',
+                    value: 'Separado',
+                    selected: false,
+                },
+                {
+                    name: 'Divorciado',
+                    value: 'Divorciado',
+                    selected: false,
+                },
+            ],
+            addAssociateOtherAssociationsSelect: [
+                {
+                    name: 'Não',
+                    value: 'Nao',
+                    selected: true,
+                },
+                {
+                    name: 'Sim',
+                    value: 'Sim',
+                    selected: false,
+                }
+            ],
+            addAssociateData: {
+                name: '',
+                email: '',
+                role: 'associate',
+                password: '',
+                document_cpf: '',
+                document_rg: '',
+                date_of_birth: '',
+                document_rg_consignor: '',
+                affiliation_date: '',
+                registration_number: '',
+                nationality: 'Brasileiro',
+                marital_status: 'Indefinido',
+                occupation: '',
+                address: '',
+                address_city_state: '',
+                address_zipcode: '',
+                phone_ddd: '',
+                phone_number: '',
+                other_associations: 'Nao',
+                code_bank: '',
+                agency_bank: '',
+                account_bank: '',
+                is_associate: 1,
+            },
         }
     },
     props: {
@@ -81,6 +169,38 @@ export default {
             toast(text, {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
+        },
+        closeAddAssociateModal() {
+            this.addAssociateData = {
+                name: '',
+                email: '',
+                role: 'associate',
+                password: '',
+                document_cpf: '',
+                document_rg: '',
+                date_of_birth: '',
+                document_rg_consignor: '',
+                affiliation_date: '',
+                registration_number: '',
+                nationality: 'Brasileiro',
+                marital_status: 'Indefinido',
+                occupation: '',
+                address: '',
+                address_city_state: '',
+                address_zipcode: '',
+                phone_ddd: '',
+                phone_number: '',
+                other_associations: 'Nao',
+                code_bank: '',
+                agency_bank: '',
+                account_bank: '',
+                is_associate: 1,
+            };
+
+            this.modalAddAssociate = false;
+        },
+        openAddAssociateModal() {
+            this.modalAddAssociate = true;
         },
         getNextPage() {
             this.loadingTable = true;
@@ -132,15 +252,54 @@ export default {
                 }
             }
         },
-        closeAddAssociateModal() {
-            this.modalAddAssociate = false;
+        addAssociate() {
+            if (this.loader) {
+                return;
+            }
+
+            if (this.addAssociateData.role == 'admin' || this.addAssociateData.role == 'superadmin') {
+                this.addAssociateData.is_associate = 0;
+            } else {
+                this.addAssociateData.is_associate = 1;
+            }
+
+            if (this.addAssociateData.role == 'adminandassociate') {
+                this.addAssociateData.role = 'admin';
+            }
+
+            if (
+                !this.addAssociateData.name ||
+                !this.addAssociateData.email ||
+                !this.addAssociateData.password ||
+                !this.addAssociateData.document_cpf ||
+                !this.addAssociateData.registration_number
+            ) {
+                return this.notify('Preencha todos os campos obrigatórios (*)!', 'error');
+            }
+
+            this.loader = true;
+
+            this.$axios.post('/user/advanced', this.addAssociateData)
+            .then(res => {
+                this.notify('Usuário criado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.loader = false;
+                this.notify(err.response.data.message, 'error');
+            });
         }
     },
-    components: { Head, Table, SimpleModal, Button, Input, Select }
+    components: { Head, Table, SimpleModal, Button, Input, Select, Loader }
 }
 </script>
 
 <template>
+    <Loader v-if="loader" />
+
     <SimpleModal v-if="modalAssociateInfos" @close="modalAssociateInfos = false">
         <div class="associate-infos-simple-modal">
             <p>ID: <span>{{ selectedAssociate.id }}</span></p>
@@ -150,7 +309,7 @@ export default {
             <p>Função: <span class="blue">{{ selectedAssociate.role == 'associate' ? 'Associado' : selectedAssociate.role == 'admin' && selectedAssociate.is_associate ? 'Administrador e Associado' : selectedAssociate.role == 'admin' ? 'Administrador' : 'Super Administrador' }}</span> </p>
             <p>CPF: <span>{{ selectedAssociate.document_cpf }}</span></p>
             <p>RG: <span>{{ selectedAssociate.document_rg }} - {{ selectedAssociate.document_rg_consignor }}</span></p>
-            <p>Data de afiliação: <span>{{ selectedAssociate.affiliaton_date }}</span></p>
+            <p>Data de afiliação: <span>{{ selectedAssociate.affiliation_date }}</span></p>
             <p>Nacionalidade: <span>{{ selectedAssociate.nationality }}</span></p>
             <p>Estado civil: <span>{{ selectedAssociate.marital_status }}</span></p>
             <p>Ocupação: <span>{{ selectedAssociate.occupation }}</span></p>
@@ -169,7 +328,7 @@ export default {
         </div>
     </SimpleModal>
 
-    <section class="bg-add-associate">
+    <section v-if="modalAddAssociate" class="bg-add-associate">
         <Head title="Criar associado" />
 
         <div @click="closeAddAssociateModal" class="close-add-associate">
@@ -178,47 +337,65 @@ export default {
 
         <section class="form-add-associate">
             <div class="form-add-associate-line">
-                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" />
+                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" v-model="addAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" />
+                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" v-model="addAssociateData.email" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" />
+                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" v-model="addAssociateData.role" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" />
+                <Input type="text" label="Senha do usuário*" placeholder="●●●●●●●●●●●●" v-model="addAssociateData.password" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" />
+                <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" v-model="addAssociateData.document_cpf" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" />
+                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" v-model="addAssociateData.registration_number" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" />
+                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" v-model="addAssociateData.document_rg" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" />
+                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" v-model="addAssociateData.document_rg_consignor" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" />
+                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" v-model="addAssociateData.affiliation_date" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" />
+                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" v-model="addAssociateData.date_of_birth" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" />
+                <Select label="Nacionalidade" :options="addAssociateNationalitySelect" v-model="addAssociateData.nationality" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="CEP" placeholder="xxxxx-xxx" />
+                <Select label="Estado civil" :options="addAssociateMaritalSelect" v-model="addAssociateData.marital_status" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="DDD Telefônico" placeholder="11" />
+                <Input type="text" label="Ocupação" placeholder="Administrador" v-model="addAssociateData.occupation" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" />
+                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" v-model="addAssociateData.address" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" />
+                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" v-model="addAssociateData.address_city_state" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="CEP" placeholder="xxxxx-xxx" v-model="addAssociateData.address_zipcode" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" />
+                <Input type="text" label="DDD Telefônico" placeholder="11" v-model="addAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Conta bancária" placeholder="1578468-2" />
+                <Input type="text" label="Número de telefone" placeholder="99999-9999" v-model="addAssociateData.phone_number" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" v-model="addAssociateData.code_bank" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" v-model="addAssociateData.agency_bank" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Conta bancária" placeholder="1578468-2" v-model="addAssociateData.account_bank" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" v-model="addAssociateData.other_associations" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Adicionar associado" @buttonPressed="addAssociate" />
             </div>
         </section>
     </section>
@@ -227,7 +404,7 @@ export default {
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <div v-if="!loadingTable" class="button-add-associate">
-            <Button type="primary" placeholder="+ Adicionar associado" />
+            <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
         </div>
 
         <Table v-if="!loadingTable" :hasActions="true" :actions="associatesTableActions" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="associates" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
@@ -239,7 +416,7 @@ export default {
     width: 100%;
     height: 100%;
     position: absolute;
-    z-index: 20;
+    z-index: 18;
     top: 0;
     left: 0;
     background-color: white;
@@ -253,6 +430,10 @@ export default {
     right: 30px;
     cursor: pointer;
     font-size: 18px;
+}
+
+.form-add-associate {
+    margin-bottom: 150px;
 }
 
 .form-add-associate .form-add-associate-line {
@@ -284,6 +465,10 @@ export default {
 .bg-see-associates #see-associates-total #see-associates-total-number {
     color: rgb(0, 123, 255);
     font-weight: 600;
+}
+
+.form-add-associate-button {
+    width: 100%;
 }
 
 .button-add-associate {
@@ -324,5 +509,15 @@ export default {
 .red {
     color: rgb(162, 1, 1);
     font-weight: 600 !important;
+}
+
+@media screen and (max-width:800px) {
+    .form-add-associate .form-add-associate-line {
+        flex-direction: column;
+    }
+
+    .form-add-associate .form-add-associate-line-space {
+        margin: 10px 0px !important;
+    }
 }
 </style>

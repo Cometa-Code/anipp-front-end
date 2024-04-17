@@ -19,7 +19,7 @@ export default {
     },
     methods: {
         emitContent(event) {
-            console.log(event.target.value);
+            this.$emit('update:modelValue', event.target.value);
         },
     }
 }
