@@ -419,6 +419,14 @@ export default {
 
                 return this.modalEditAssociate = true;
             }
+
+            if (event.eventType == 'dollar') {
+                for (let i = 0; i < this.associatesFullInfos.length; i++) {
+                    if (this.associatesFullInfos[i].document_cpf === event.data[2]) {
+                        this.$router.push(`/vida-financeira/${this.associatesFullInfos[i].id}`)
+                    }
+                }
+            }
         },
         addAssociate() {
             if (this.loader) {
