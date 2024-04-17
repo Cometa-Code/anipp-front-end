@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import HomeView from '../views/pages/HomeView.vue'
+import SeeAssociatesView from '../views/pages/SeeAssociatesView.vue'
 import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 
 const routes = [
@@ -19,7 +20,12 @@ const routes = [
         path: '/inicio',
         name: 'Página Inicial',
         component: HomeView
-      }
+      },
+      {
+        path: '/associados',
+        name: 'Associados',
+        component: SeeAssociatesView
+      },
     ]
   },
   {
