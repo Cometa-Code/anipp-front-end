@@ -35,7 +35,10 @@ export default {
             selectedAssociate: null,
             modalAssociateInfos: false,
             modalAddAssociate: false,
+            modalEditAssociate: false,
             addAssociateRoleSelect: [],
+            editAssociateRoleSelect: [],
+            editAssociateNationalitySelect: [],
             addAssociateNationalitySelect: [
                 {
                     name: 'Brasileiro',
@@ -85,6 +88,7 @@ export default {
                     selected: false,
                 },
             ],
+            editAssociateMaritalSelect: [],
             addAssociateOtherAssociationsSelect: [
                 {
                     name: 'Não',
@@ -97,6 +101,32 @@ export default {
                     selected: false,
                 }
             ],
+            editAssociateOtherAssociationsSelect: [],
+            editAssociateData: {
+                name: undefined,
+                email: undefined,
+                role: undefined,
+                password: undefined,
+                document_cpf: undefined,
+                document_rg: undefined,
+                date_of_birth: undefined,
+                document_rg_consignor: undefined,
+                affiliation_date: undefined,
+                registration_number: undefined,
+                nationality: undefined,
+                marital_status: undefined,
+                occupation: undefined,
+                address: undefined,
+                address_city_state: undefined,
+                address_zipcode: undefined,
+                phone_ddd: undefined,
+                phone_number: undefined,
+                other_associations: undefined,
+                code_bank: undefined,
+                agency_bank: undefined,
+                account_bank: undefined,
+                is_associate: undefined,
+            },
             addAssociateData: {
                 name: '',
                 email: '',
@@ -169,6 +199,37 @@ export default {
             toast(text, {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
+        },
+        closeEditAssociateModal() {
+            this.addAssociateData = {
+                name: undefined,
+                email: undefined,
+                role: undefined,
+                password: undefined,
+                document_cpf: undefined,
+                document_rg: undefined,
+                date_of_birth: undefined,
+                document_rg_consignor: undefined,
+                affiliation_date: undefined,
+                registration_number: undefined,
+                nationality: undefined,
+                marital_status: undefined,
+                occupation: undefined,
+                address: undefined,
+                address_city_state: undefined,
+                address_zipcode: undefined,
+                phone_ddd: undefined,
+                phone_number: undefined,
+                other_associations: undefined,
+                code_bank: undefined,
+                agency_bank: undefined,
+                account_bank: undefined,
+                is_associate: undefined,
+            };
+
+            this.editAssociateRoleSelect = [];
+
+            this.modalEditAssociate = false;
         },
         closeAddAssociateModal() {
             this.addAssociateData = {
@@ -251,6 +312,113 @@ export default {
                     }
                 }
             }
+
+            if (event.eventType == 'pencil-square') {
+                for (let i = 0; i < this.associatesFullInfos.length; i++) {
+                    if (this.associatesFullInfos[i].document_cpf === event.data[2]) {
+                        this.editAssociateData = this.associatesFullInfos[i];
+                    }
+                }
+
+                this.editAssociateNationalitySelect = [
+                    {
+                        name: 'Brasileiro',
+                        value: 'Brasileiro',
+                        selected: this.editAssociateData.nationality == 'Brasileiro' ? true : false,
+                    },
+                    {
+                        name: 'Estrangeiro',
+                        value: 'Estrangeiro',
+                        selected: this.editAssociateData.nationality == 'Estrangeiro' ? true : false,
+                    },
+                    {
+                        name: 'Indefinido',
+                        value: 'Indefinido',
+                        selected: this.editAssociateData.nationality == 'Indefinido' ? true : false,
+                    },
+                ];
+
+                if (this.userData.role == 'superadmin') {
+                    this.editAssociateRoleSelect.push(
+                        {
+                            name: 'Super Administrador',
+                            value: 'superadmin',
+                            selected: this.editAssociateData.role == 'superadmin' ? true : false
+                        },
+                        {
+                            name: 'Associado e Administrador',
+                            value: 'adminandassociate',
+                            selected: this.editAssociateData.role == 'admin' && this.editAssociateData.is_associate == 1 ? true : false
+                        },
+                        {
+                            name: 'Administrador',
+                            value: 'admin',
+                            selected: this.editAssociateData.role == 'admin' && this.editAssociateData.is_associate == 0 ? true : false
+                        },
+                    );
+                }
+                
+                this.editAssociateRoleSelect.push(
+                    {
+                        name: 'Associado',
+                        value: 'associate',
+                        selected: this.editAssociateData.role == 'associate' ? true : false
+                    }
+                );
+
+                this.editAssociateMaritalSelect = [
+                    {
+                        name: 'Indefinido',
+                        value: 'Indefinido',
+                        selected: this.editAssociateData.marital_status == 'Indefinido' ? true : false,
+                    },
+                    {
+                        name: 'Solteiro',
+                        value: 'Solteiro',
+                        selected: this.editAssociateData.marital_status == 'Solteiro' ? true : false,
+                    },
+                    {
+                        name: 'Casado',
+                        value: 'Casado',
+                        selected: this.editAssociateData.marital_status == 'Casado' ? true : false,
+                    },
+                    {
+                        name: 'Viúvo',
+                        value: 'Viuvo',
+                        selected: this.editAssociateData.marital_status == 'Viuvo' ? true : false,
+                    },
+                    {
+                        name: 'Separado',
+                        value: 'Separado',
+                        selected: this.editAssociateData.marital_status == 'Separado' ? true : false,
+                    },
+                    {
+                        name: 'Divorciado',
+                        value: 'Divorciado',
+                        selected: this.editAssociateData.marital_status == 'Divorciado' ? true : false,
+                    },
+                ];
+
+                this.editAssociateOtherAssociationsSelect = [
+                    {
+                        name: 'Sim',
+                        value: 'Sim',
+                        selected: this.editAssociateData.other_associations == 'Sim' ? true : false,
+                    },
+                    {
+                        name: 'Não',
+                        value: 'Nao',
+                        selected: this.editAssociateData.other_associations == 'Nao' ? true : false,
+                    },
+                    {
+                        name: 'Indefinido',
+                        value: 'Indefinido',
+                        selected: this.editAssociateData.other_associations == 'Indefinido' ? true : false,
+                    },
+                ];
+
+                return this.modalEditAssociate = true;
+            }
         },
         addAssociate() {
             if (this.loader) {
@@ -282,6 +450,45 @@ export default {
             this.$axios.post('/user/advanced', this.addAssociateData)
             .then(res => {
                 this.notify('Usuário criado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.loader = false;
+                this.notify(err.response.data.message, 'error');
+            });
+        },
+        editAssociate() {
+            if (this.loader) {
+                return;
+            }
+
+            if (this.editAssociateData.role == 'admin' || this.editAssociateData.role == 'superadmin') {
+                this.editAssociateData.is_associate = 0;
+            } else {
+                this.editAssociateData.is_associate = 1;
+            }
+
+            if (this.editAssociateData.role == 'adminandassociate') {
+                this.editAssociateData.role = 'admin';
+            }
+
+            if (
+                !this.editAssociateData.name ||
+                !this.editAssociateData.email ||
+                !this.editAssociateData.document_cpf ||
+                !this.editAssociateData.registration_number
+            ) {
+                return this.notify('Preencha todos os campos obrigatórios (*)!', 'error');
+            }
+
+            this.loader = true;
+
+            this.$axios.put(`/user/advanced/${this.editAssociateData.document_cpf}`, this.editAssociateData)
+            .then(res => {
+                this.notify('Usuário atualizado com sucesso!', 'success');
 
                 setTimeout(() => {
                     window.location.reload();
@@ -337,65 +544,133 @@ export default {
 
         <section class="form-add-associate">
             <div class="form-add-associate-line">
-                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" v-model="addAssociateData.name" />
+                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="addAssociateData.name" v-model="addAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" v-model="addAssociateData.email" />
+                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="addAssociateData.email" v-model="addAssociateData.email" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" v-model="addAssociateData.role" />
+                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Senha do usuário*" placeholder="●●●●●●●●●●●●" v-model="addAssociateData.password" />
+                <Input type="text" label="Senha do usuário*" placeholder="●●●●●●●●●●●●" :value="addAssociateData.password" v-model="addAssociateData.password" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" v-model="addAssociateData.document_cpf" />
+                <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" :value="addAssociateData.document_cpf" v-model="addAssociateData.document_cpf" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" v-model="addAssociateData.registration_number" />
+                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" v-model="addAssociateData.document_rg" />
+                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" :value="addAssociateData.document_rg" v-model="addAssociateData.document_rg" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" v-model="addAssociateData.document_rg_consignor" />
+                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" :value="addAssociateData.document_rg_consignor" v-model="addAssociateData.document_rg_consignor" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" v-model="addAssociateData.affiliation_date" />
+                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" :value="addAssociateData.affiliation_date" v-model="addAssociateData.affiliation_date" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" v-model="addAssociateData.date_of_birth" />
+                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" :value="addAssociateData.date_of_birth" v-model="addAssociateData.date_of_birth" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Nacionalidade" :options="addAssociateNationalitySelect" v-model="addAssociateData.nationality" />
+                <Select label="Nacionalidade" :options="addAssociateNationalitySelect" :value="addAssociateData.nationality" v-model="addAssociateData.nationality" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Estado civil" :options="addAssociateMaritalSelect" v-model="addAssociateData.marital_status" />
+                <Select label="Estado civil" :options="addAssociateMaritalSelect" :value="addAssociateData.marital_status" v-model="addAssociateData.marital_status" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Ocupação" placeholder="Administrador" v-model="addAssociateData.occupation" />
+                <Input type="text" label="Ocupação" placeholder="Administrador" :value="addAssociateData.occupation" v-model="addAssociateData.occupation" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" v-model="addAssociateData.address" />
+                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" :value="addAssociateData.address" v-model="addAssociateData.address" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" v-model="addAssociateData.address_city_state" />
+                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" :value="addAssociateData.address_city_state" v-model="addAssociateData.address_city_state" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="CEP" placeholder="xxxxx-xxx" v-model="addAssociateData.address_zipcode" />
+                <Input type="text" label="CEP" placeholder="xxxxx-xxx" :value="addAssociateData.address_zipcode" v-model="addAssociateData.address_zipcode" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="DDD Telefônico" placeholder="11" v-model="addAssociateData.phone_ddd" />
+                <Input type="text" label="DDD Telefônico" placeholder="11" :value="addAssociateData.phone_ddd" v-model="addAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" v-model="addAssociateData.phone_number" />
+                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="addAssociateData.phone_number" v-model="addAssociateData.phone_number" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" v-model="addAssociateData.code_bank" />
+                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" v-model="addAssociateData.agency_bank" />
+                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Conta bancária" placeholder="1578468-2" v-model="addAssociateData.account_bank" />
+                <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="addAssociateData.account_bank" v-model="addAssociateData.account_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" v-model="addAssociateData.other_associations" />
+                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-button">
                 <Button type="primary" placeholder="Adicionar associado" @buttonPressed="addAssociate" />
+            </div>
+        </section>
+    </section>
+
+    <section v-if="modalEditAssociate" class="bg-add-associate">
+        <Head title="Editar associado" />
+
+        <div @click="closeEditAssociateModal" class="close-add-associate">
+            x
+        </div>
+
+        <section class="form-add-associate">
+            <div class="form-add-associate-line">
+                <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="editAssociateData.name" v-model="editAssociateData.name" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="editAssociateData.email" v-model="editAssociateData.email" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Select label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Documento RG" placeholder="x.xxx.xxx - xx" :value="editAssociateData.document_rg" v-model="editAssociateData.document_rg" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" :value="editAssociateData.document_rg_consignor" v-model="editAssociateData.document_rg_consignor" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" :value="editAssociateData.affiliation_date" v-model="editAssociateData.affiliation_date" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="date" label="Data de nascimento" placeholder="8.547.856-7" :value="editAssociateData.date_of_birth" v-model="editAssociateData.date_of_birth" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Nacionalidade" :options="editAssociateNationalitySelect" :value="editAssociateData.nationality" v-model="editAssociateData.nationality" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Estado civil" :options="editAssociateMaritalSelect" :value="editAssociateData.marital_status" v-model="editAssociateData.marital_status" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Ocupação" placeholder="Administrador" :value="editAssociateData.occupation" v-model="editAssociateData.occupation" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" :value="editAssociateData.address" v-model="editAssociateData.address" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Cidade/Estado" placeholder="São Paulo SP" :value="editAssociateData.address_city_state" v-model="editAssociateData.address_city_state" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="CEP" placeholder="xxxxx-xxx" :value="editAssociateData.address_zipcode" v-model="editAssociateData.address_zipcode" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="DDD Telefônico" placeholder="11" :value="editAssociateData.phone_ddd" v-model="editAssociateData.phone_ddd" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="editAssociateData.phone_number" v-model="editAssociateData.phone_number" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Atualizar associado" @buttonPressed="editAssociate" />
             </div>
         </section>
     </section>

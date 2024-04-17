@@ -18,7 +18,10 @@ export default {
         },
         modelValue: {
             type: String
-        }
+        },
+        value: {
+            type: String
+        },
     },
     emits: ["update:modelValue"],
     data() {
@@ -44,7 +47,7 @@ export default {
     <section class="bg-input">
         <label :for="inputName" class="label-input">{{ label }}</label>
 
-        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue">
+        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue" :value="value" />
     </section>
 </template>
 
