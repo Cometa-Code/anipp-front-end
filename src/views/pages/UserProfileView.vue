@@ -124,6 +124,48 @@ export default {
                 this.loader = false;
             })
         },
+        updateUserPassword() {
+            if (this.loader) {
+                return;
+            }
+
+            if (
+                !this.editUserPassword.actual_password ||
+                !this.editUserPassword.new_password ||
+                !this.editUserPassword.confirm_new_password
+            ) {
+                return this.notify('Preencha todos os campos para atualizar sua senha!', 'error');
+            }
+
+            if (this.editUserPassword.actual_password == this.editUserPassword.new_password) {
+                return this.notify('A nova senha não pode ser igual a senha atual!', 'error');
+            }
+
+            if (this.editUserPassword.new_password.length < 7) {
+                return this.notify('A nova senha deve possuir ao menos 8 caracteres, uma letra maiuscula, uma letra minuscula e um número!', 'error');
+            }
+
+            if (this.editUserPassword.new_password != this.editUserPassword.confirm_new_password) {
+                return this.notify('A confirmação da nova senha deve ser igual a nova senha!', 'error');
+            }
+
+            this.loader = true;
+
+            this.$axios.put('/user/password', {
+                actual_password: this.editUserPassword.actual_password,
+                new_password: this.editUserPassword.new_password
+            })
+            .then(res => {
+                this.notify('Senha atualizada com sucesso!', 'success');
+
+                this.loader = false;
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro durante a atualização, verifique se a senha está correta!', 'error');
+
+                this.loader = false;
+            })
+        }
     },
     components: { Head, Input, Select, Button, Loader }
 }
