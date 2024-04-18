@@ -71,6 +71,21 @@ body{
   overflow: hidden;
 }
 
+*::-webkit-scrollbar {
+  width: 12px !important;  
+  height: 12px;             /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent !important;        /* color of the tracking area */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: gray !important;
+  border-radius: 20px !important;
+  border: 3px solid #F3F2F2 !important; 
+}
+
 /* Variáveis */
 .mt-1 {
   margin-top: 10px;

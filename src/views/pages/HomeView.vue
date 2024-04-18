@@ -58,7 +58,7 @@ export default {
                     title="Meu financeiro" 
                     description="Acompanhe sua vida financeira na associação."
                     redirect-title="Ver vida financeira"
-                    redirectPage="/financeiro-associado"
+                    redirectPage="/vida-financeira"
                     icon="wallet"
                 />
             </div>
@@ -78,8 +78,8 @@ export default {
                 <Card 
                     title="Ver associados" 
                     description="Acompanhe os associados e a vida financeira através de históricos de pagamentos."
-                    redirect-title="Ver informes"
-                    redirectPage="/informes"
+                    redirect-title="Ver associados"
+                    redirectPage="/associados"
                     icon="users"
                 />
             </div>
@@ -88,7 +88,7 @@ export default {
                 <Card 
                     title="Fluxo de caixa" 
                     description="Acompanhe e gerencie o fluxo de caixa da associação."
-                    redirect-title="Ver informes"
+                    redirect-title="Acompanhar caixa"
                     redirectPage="/informes"
                     icon="dollar"
                 />
@@ -98,7 +98,7 @@ export default {
                 <Card 
                     title="Gerenciar informes" 
                     description="Gerencie os informes da associação. Adicione e exclua informes."
-                    redirect-title="Ver informes"
+                    redirect-title="Gerenciar informes"
                     redirectPage="/informes"
                     icon="table-cells"
                 />
