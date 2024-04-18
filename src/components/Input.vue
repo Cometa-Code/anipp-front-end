@@ -25,6 +25,9 @@ export default {
         value: {
             type: String
         },
+        disabled: {
+            type: Boolean
+        }
     },
     emits: ["update:modelValue"],
     data() {
@@ -66,7 +69,7 @@ export default {
     <section class="bg-input">
         <label :for="inputName" class="label-input">{{ label }}</label>
 
-        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue" :value="value" />
+        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue" :value="value" :disabled="disabled" />
     </section>
 </template>
 
