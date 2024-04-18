@@ -34,6 +34,17 @@ export default {
             associate_name: '',
             payments: [],
             paymentsFullInfos: [],
+            modalAddPayment: false,
+            addPaymentData: {
+                payment_method: '',
+                payment_type: 'Mensalidade',
+                payment_date: '',
+                credit_value: 0,
+                membership_fee: 0,
+                charges: 0,
+                fees: 0,
+                comments: '',
+            },
         }
     },
     props: {
@@ -104,6 +115,66 @@ export default {
                 
                 this.notify('Erro ao buscar informações!', 'error');
             })
+        },
+        openAddPaymentModal() {
+            this.modalAddPayment = true;
+        },
+        closeAddPaymentModal() {
+            this.addPaymentData = {
+                payment_method: '',
+                payment_type: 'Mensalidade',
+                payment_date: '',
+                credit_value: 0,
+                membership_fee: 0,
+                charges: 0,
+                fees: 0,
+                comments: '',
+            };
+
+            this.modalAddPayment = false;
+        },
+        addPayment() {
+            if (
+                !this.addPaymentData.payment_method ||
+                !this.addPaymentData.payment_type ||
+                !this.addPaymentData.payment_date ||
+                !this.addPaymentData.credit_value ||
+                !this.addPaymentData.membership_fee ||
+                !this.addPaymentData.charges ||
+                !this.addPaymentData.fees
+            ) {
+                return this.notify('Preencha todos os dados obrigatórios para adicionar um pagamento!', 'error');
+            }
+
+            this.loader = true;
+
+            this.$axios.post('/payments', {
+                user_id: parseInt(this.$route.params.id),
+                payment_method: this.addPaymentData.payment_method,
+                payment_type: this.addPaymentData.payment_type,
+                payment_date: this.addPaymentData.payment_date,
+                credit_value: parseFloat(this.addPaymentData.credit_value),
+                membership_fee: parseFloat(this.addPaymentData.membership_fee),
+                charges: parseFloat(this.addPaymentData.charges),
+                fees: parseFloat(this.addPaymentData.fees),
+                comments: this.addPaymentData.comments
+            })
+            .then(res => {
+                this.notify('Pagamento adicionado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                switch (err.response.data.message) {
+                    case "Apenas administradores podem tomar essa ação!":
+                        this.$router.push('/inicio');
+                        break;
+                }
+                
+                this.notify('Erro ao adicionar pagamento!', 'error');
+            });
         }
     },
     components: { Head, Table, SimpleModal, Button, Input, Select, Loader }
@@ -113,11 +184,49 @@ export default {
 <template>
     <Loader v-if="loader" />
 
+    <section v-if="modalAddPayment" class="bg-add-associate">
+        <Head title="Pagamento manual" />
+
+        <div @click="closeAddPaymentModal" class="close-add-associate">
+            x
+        </div>
+
+        <section class="form-add-associate">
+            <div class="form-add-associate-line">
+                <Input type="text" label="Método de pagamento*" placeholder="PIX" :value="addPaymentData.payment_method" v-model="addPaymentData.payment_method" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Tipo de pagamento*" placeholder="Mensalidade" :value="addPaymentData.payment_type" v-model="addPaymentData.payment_type" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="date" label="Data do pagamento" placeholder="10/01/2023" :value="addPaymentData.payment_date" v-model="addPaymentData.payment_date" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Valor do crédito" placeholder="127.90" :value="addPaymentData.credit_value" v-model="addPaymentData.credit_value" :currencyMask="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Taxa de adesão*" placeholder="127.90" :value="addPaymentData.membership_fee" v-model="addPaymentData.membership_fee" :currencyMask="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Encargos*" placeholder="127.90" :value="addPaymentData.charges" v-model="addPaymentData.charges" :currencyMask="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Honorários*" placeholder="10/01/2023" :value="addPaymentData.fees" v-model="addPaymentData.fees" :currencyMask="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Observações" placeholder="Esse pagamento foi..." :value="addPaymentData.comments" v-model="addPaymentData.comments" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Adicionar pagamento" @buttonPressed="addPayment" />
+            </div>
+        </section>
+    </section>
+
     <section class="bg-see-associates">
         <Head :title="`Vida Financeira - ${associate_name}`" />
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
+
+        <div v-if="!loadingTable" class="button-add-associate">
+            <Button type="primary" @buttonPressed="openAddPaymentModal" placeholder="+ Adicionar pagamento" />
+        </div>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
     </section>

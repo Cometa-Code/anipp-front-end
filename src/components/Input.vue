@@ -16,6 +16,9 @@ export default {
         onlyNumbers: {
             type: Boolean
         },
+        currencyMask: {
+            type: Boolean
+        },
         modelValue: {
             type: String
         },
@@ -31,9 +34,25 @@ export default {
     },
     methods: {
         emitContent(event) {
+            if (this.currencyMask) {
+                    const newValue = event.target.value.replace(/\D/g, '');
+                    event.target.value = newValue;
+
+                    var n = undefined;
+                    
+                    if (newValue.length > 2) {
+                        n = newValue.slice(0, -2) + '.' + newValue.slice(-2);
+
+                        return this.$emit('update:modelValue', n);
+                    }
+
+                    return this.$emit('update:modelValue', newValue);
+                }
+
             if (this.onlyNumbers) {
                 const newValue = event.target.value.replace(/\D/g, '');
                 event.target.value = newValue;
+
                 this.$emit('update:modelValue', newValue);
             } else {
                 this.$emit('update:modelValue', event.target.value);
