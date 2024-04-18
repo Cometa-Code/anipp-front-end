@@ -1,8 +1,11 @@
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import Head from '@/components/Head';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Select from '@/components/Select';
+import Loader from '@/components/Loader';
 
 export default {
     props: {
@@ -96,11 +99,39 @@ export default {
         this.editUserData.phone_number = this.userData.phone_number;
         this.editUserData.date_of_birth = this.userData.date_of_birth;
     },
-    components: { Head, Input, Select, Button }
+    methods: {
+        notify(text, type) {
+            toast(text, {
+                "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
+            });
+        },
+        updateUserData() {
+            if (this.loader) {
+                return;
+            }
+
+            this.loader = true;
+
+            this.$axios.put('/user', this.editUserData)
+            .then(res => {
+                this.notify('Dados atualizados com suceso!', 'success');
+
+                this.loader = false;
+            })
+            .catch(err => {
+                this.notify('Erro ao atualizar dados do usuário!', 'error');
+
+                this.loader = false;
+            })
+        },
+    },
+    components: { Head, Input, Select, Button, Loader }
 }
 </script>
 
 <template>
+    <Loader v-if="loader" />
+
     <section class="bg-user-profile">
         <Head title="Meu perfil" />
         <p class="user-profile-info">Olá, você está logado como <span class="gold">{{ userData.role == 'admin' && userData.is_associate == 1 ? 'administrador e associado' : userData.role == 'admin' || userData.role == 'superadmin' ? 'administrador' : 'associado' }}!</span></p>
@@ -126,21 +157,21 @@ export default {
             </div>
 
             <div class="form-user-data-line">
-                <Input type="text" label="Ocupação" placeholder="Administrador" :value="userData.occupation" v-model="userData.occupation" />
+                <Input type="text" label="Ocupação" placeholder="Administrador" :value="editUserData.occupation" v-model="editUserData.occupation" />
                 <div class="form-user-data-line-space"></div>
-                <Input type="text" label="Endereço" placeholder="Rua João Santo, Prédio 201, Ap. 101" :value="userData.address" v-model="userData.address" />
+                <Input type="text" label="Endereço" placeholder="Rua João Santo, Prédio 201, Ap. 101" :value="editUserData.address" v-model="editUserData.address" />
             </div>
 
             <div class="form-user-data-line">
-                <Input type="text" label="Município/Estado" placeholder="São Paulo - SP" :value="userData.address_city_state" v-model="userData.address_city_state" />
+                <Input type="text" label="Município/Estado" placeholder="São Paulo - SP" :value="editUserData.address_city_state" v-model="editUserData.address_city_state" />
                 <div class="form-user-data-line-space"></div>
-                <Input type="text" label="CEP" placeholder="00000-000" :value="userData.address_zipcode" v-model="userData.address_zipcode" />
+                <Input type="text" label="CEP" placeholder="00000-000" :value="editUserData.address_zipcode" v-model="editUserData.address_zipcode" />
             </div>
 
             <div class="form-user-data-line">
-                <Input type="text" label="DDD do telefone" placeholder="11" :value="userData.phone_ddd" v-model="userData.phone_ddd" :only-numbers="true" />
+                <Input type="text" label="DDD do telefone" placeholder="11" :value="editUserData.phone_ddd" v-model="editUserData.phone_ddd" :only-numbers="true" />
                 <div class="form-user-data-line-space"></div>
-                <Input type="text" label="Número do telefone" placeholder="999999999" :value="userData.phone_number" v-model="userData.phone_number" :only-numbers="true" />
+                <Input type="text" label="Número do telefone" placeholder="999999999" :value="editUserData.phone_number" v-model="editUserData.phone_number" :only-numbers="true" />
             </div>
 
             <div class="form-button">
