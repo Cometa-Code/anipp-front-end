@@ -99,7 +99,7 @@ export default {
                     title="Gerenciar informes" 
                     description="Gerencie os informes da associação. Adicione e exclua informes."
                     redirect-title="Gerenciar informes"
-                    redirectPage="/informes"
+                    redirectPage="/gerenciar-informes"
                     icon="table-cells"
                 />
             </div>
