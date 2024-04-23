@@ -7,6 +7,8 @@ import SeeAssociatesView from '../views/pages/SeeAssociatesView.vue'
 import FinancialLifeView from '../views/pages/FinancialLifeView.vue'
 import AssociateFinancialLifeView from '../views/pages/AssociateFinancialLifeView.vue'
 import RecoverPasswordView from '../views/RecoverPasswordView.vue'
+import ManageReportsView from '@/views/pages/ManageReportsView.vue'
+import ReportsView from '@/views/pages/ReportsView.vue'
 
 const routes = [
   { path: '/:pathMatch(.*)*', redirect: '/acessar' },
@@ -43,6 +45,16 @@ const routes = [
         path: '/vida-financeira/:id',
         name: 'Vida Financeira do Associado',
         component: AssociateFinancialLifeView
+      },
+      {
+        path: '/gerenciar-informes',
+        name: 'Gerenciar Informes',
+        component: ManageReportsView
+      },
+      {
+        path: '/informes',
+        name: 'Ver Informes',
+        component: ReportsView
       },
     ]
   },
