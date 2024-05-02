@@ -22,7 +22,7 @@ export default {
                 'Nome',
                 'Email',
                 'Documento',
-                'Matrícula',
+                'Matrícula ECT',
                 'Status Financeiro'
             ],
             associatesTableActions: [
@@ -520,11 +520,11 @@ export default {
             <p>ID: <span>{{ selectedAssociate.id }}</span></p>
             <p>Nome: <span class="blue">{{ selectedAssociate.name }}</span></p>
             <p>Email: <span class="blue">{{ selectedAssociate.email }}</span></p>
-            <p>Número de registro: <span class="orange">{{ selectedAssociate.registration_number }}</span></p>
+            <p>Matrícula ECT: <span class="orange">{{ selectedAssociate.registration_number }}</span></p>
             <p>Função: <span class="blue">{{ selectedAssociate.role == 'associate' ? 'Associado' : selectedAssociate.role == 'admin' && selectedAssociate.is_associate ? 'Administrador e Associado' : selectedAssociate.role == 'admin' ? 'Administrador' : 'Super Administrador' }}</span> </p>
             <p>CPF: <span>{{ selectedAssociate.document_cpf }}</span></p>
             <p>RG: <span>{{ selectedAssociate.document_rg }} - {{ selectedAssociate.document_rg_consignor }}</span></p>
-            <p>Data de afiliação: <span>{{ selectedAssociate.affiliation_date }}</span></p>
+            <p>Data de filiação: <span>{{ selectedAssociate.affiliation_date }}</span></p>
             <p>Nacionalidade: <span>{{ selectedAssociate.nationality }}</span></p>
             <p>Estado civil: <span>{{ selectedAssociate.marital_status }}</span></p>
             <p>Ocupação: <span>{{ selectedAssociate.occupation }}</span></p>
@@ -533,7 +533,6 @@ export default {
             <p>CEP: <span>{{ selectedAssociate.address_zipcode }}</span></p>
             <p>Telefone: <span>{{ selectedAssociate.phone_ddd }} {{ selectedAssociate.phone_number }}</span></p>
             <p>Múltiplos pagamentos: <span :class="selectedAssociate.other_associations == 'Sim' ? 'orange' : ''">{{ selectedAssociate.other_associations }}</span></p>
-            <p>Tipo de pagamento: <span>{{ selectedAssociate.payment_type }}</span></p>
             <p>Código do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
@@ -564,7 +563,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" :value="addAssociateData.document_cpf" v-model="addAssociateData.document_cpf" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
+                <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
             </div>
 
             <div class="form-add-associate-line">
@@ -572,7 +571,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" :value="addAssociateData.document_rg_consignor" v-model="addAssociateData.document_rg_consignor" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" :value="addAssociateData.affiliation_date" v-model="addAssociateData.affiliation_date" />
+                <Input type="date" label="Data de filiação" placeholder="10/01/2023" :value="addAssociateData.affiliation_date" v-model="addAssociateData.affiliation_date" />
             </div>
 
             <div class="form-add-associate-line">
@@ -632,7 +631,7 @@ export default {
             <div class="form-add-associate-line">
                 <Select label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de registro*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
+                <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
                 <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
             </div>
@@ -642,7 +641,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Expedidor do RG" placeholder="SSP/UF" :value="editAssociateData.document_rg_consignor" v-model="editAssociateData.document_rg_consignor" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="date" label="Data de afiliação" placeholder="10/01/2023" :value="editAssociateData.affiliation_date" v-model="editAssociateData.affiliation_date" />
+                <Input type="date" label="Data de filiação" placeholder="10/01/2023" :value="editAssociateData.affiliation_date" v-model="editAssociateData.affiliation_date" />
             </div>
 
             <div class="form-add-associate-line">

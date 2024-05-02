@@ -19,15 +19,13 @@ export default {
             actualPage: 0,
             totalItems: 0,
             associateTableCategories: [
-                'Método de pagamento',
-                'Tipo de pagamento',
-                'Data de pagamento',
+                'Meio do crédito',
+                'Data do crédito',
                 'Valor do crédito',
                 'Taxa de adesão',
-                'Encargos',
                 'Honorários',
-                'Total pago',
-                'Observações',
+                'Encargos',
+                'Total'
             ],
             totalSumPayments: 0,
             financial_situation: '',
@@ -75,15 +73,14 @@ export default {
                 data.data.data.forEach((item) => {
                     let payments = [];
 
-                    payments.push(item.payment_method); 
-                    payments.push(item.payment_type);
+                    payments.push(item.payment_method);
+                    payments.push(`${this.payment_date[8]}${this.payment_date[9]}/${this.payment_date[5]}${this.payment_date[6]}/${this.payment_date[0]}${this.payment_date[1]}${this.payment_date[2]}${this.payment_date[3]}`);
                     payments.push(item.payment_date);
                     payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
                     payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
-                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
                     payments.push(`R$ ${item.fees.replace('.', ',')}`);
-                    payments.push(`R$ ${parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)}`);
-                    payments.push(item.comments);
+                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
+                    payments.push(`R$ ${(parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)).toFixed(2).replace(".", ",")}`);
 
                     this.payments.push(payments);
                     this.paymentsFullInfos.push(item);
@@ -113,7 +110,7 @@ export default {
     <section class="bg-see-associates">
         <Head title="Vida Financeira" />
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toFixed(2).replace(".", ",") }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
