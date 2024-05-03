@@ -39,7 +39,32 @@ export default {
             filtersData: {
                 initial_date: '2018-01-01',
                 finish_date: this.getCurrentDate(),
-            }
+            },
+            modalManualHistory: false,
+            addManualHistoryData: {
+                type: "Entrada",
+                date: this.getCurrentDate(),
+                origin_agency: '',
+                allotment: '',
+                document_number: '',
+                history_code: '',
+                history: '',
+                history_detail: '',
+                value: 0,
+                description: '',
+            },
+            typeSelectManualHistory: [
+                {
+                    name: 'Entrada',
+                    value: 'Entrada',
+                    selected: true
+                },
+                {
+                    name: 'Saida',
+                    value: 'Saida',
+                    selected: false
+                },
+            ],
         }
     },
     created() {
@@ -159,6 +184,38 @@ export default {
                 return this.notify('Ocorreu um erro ao buscar o histórido do fluxo de caixa.', 'error');
             });
         },
+        addCashFlow() {
+            this.loader = true;
+
+            this.$axios.post('/cash_flow', this.addManualHistoryData)
+            .then(res => {
+                this.notify('Histórico adicionado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro ao tentar adicionar um histórico novo.', 'error');
+                this.loader = false;
+            });
+        },
+        closeModalManualHistory() {
+            this.addManualHistoryData = {
+                type: "Entrada",
+                date: this.getCurrentDate(),
+                origin_agency: '',
+                allotment: '',
+                document_number: '',
+                history_code: '',
+                history: '',
+                history_detail: '',
+                value: 0,
+                description: '',
+            };
+
+            this.modalManualHistory = false;
+        }
     },
     components: { Head, Table, Button, Input, Select, Loader }
 }
@@ -167,15 +224,63 @@ export default {
 <template>
     <Loader v-if="loader" />
 
+    <section v-if="modalManualHistory" class="bg-add-associate">
+        <Head title="Adicionar histórico manual" />
+
+        <div @click="closeModalManualHistory" class="close-add-associate">
+            x
+        </div>
+
+        <section class="form-add-associate">
+            <div class="form-add-associate-line">
+                <Select label="Tipo" :options="typeSelectManualHistory" :value="addManualHistoryData.type" v-model="addManualHistoryData.type" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="date" label="Data" placeholder="10/01/2023" :value="addManualHistoryData.date" v-model="addManualHistoryData.date" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Agência de origem" placeholder="0001" :value="addManualHistoryData.origin_agency" v-model="addManualHistoryData.origin_agency" :onlyNumbers="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Lote" placeholder="54875" :value="addManualHistoryData.allotment" v-model="addManualHistoryData.allotment" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número do documento" placeholder="54875" :value="addManualHistoryData.document_number" v-model="addManualHistoryData.document_number" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Código do histórico" placeholder="877" :value="addManualHistoryData.history_code" v-model="addManualHistoryData.history_code" :onlyNumbers="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Histórico" placeholder="Transferência recebida" :value="addManualHistoryData.history" v-model="addManualHistoryData.history" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Detalhamento do histórico" placeholder="02/01 10:20 FULANO CICLANO" :value="addManualHistoryData.history_detail" v-model="addManualHistoryData.history_detail" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Valor" placeholder="200.00" :value="addManualHistoryData.value" v-model="addManualHistoryData.value" :currencyMask="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Descrição" placeholder="Recebimento de mensalidade de Fulano Ciclano" :value="addManualHistoryData.description" v-model="addManualHistoryData.description" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Adicionar histórico" @buttonPressed="addCashFlow" />
+            </div>
+        </section>
+    </section>
+
     <section class="bg-cash-flow">
         <Head title="Fluxo de Caixa" />
+
+        <section class="actions">
+            <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistory = true" />
+            <div class="form-line-space"></div>
+            <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="" />
+        </section>
 
         <section class="filters">
             <Input type="date" label="Desde de:" placeholder="10/01/2023" :value="filtersData.initial_date" v-model="filtersData.initial_date" />
             <div class="form-line-space"></div>
             <Input type="date" label="Até:" placeholder="10/01/2023" :value="filtersData.finish_date" v-model="filtersData.finish_date" />
             <div class="form-line-space"></div>
-            <Button type="primary" placeholder="Filtrar" class="" @buttonPressed="getRecoverFilter" />
+            <Button type="primary" placeholder="Filtrar" class="btn" @buttonPressed="getRecoverFilter" />
         </section>
 
         <section v-if="!loader" class="bg-cards">
@@ -200,6 +305,43 @@ export default {
 </template>
 
 <style scoped>
+.bg-add-associate {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 18;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-y: auto;
+    padding: 0px 30px;
+}
+
+.form-add-associate {
+    margin-bottom: 150px;
+}
+
+.bg-add-associate .close-add-associate {
+    position: absolute;
+    top: 22px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.form-add-associate .form-add-associate-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1600px;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+
+.form-add-associate .form-add-associate-line .form-add-associate-line-space {
+    margin: 0px 10px;
+}
+
 .bg-cash-flow {
     width: 100%;
     height: auto;
@@ -255,7 +397,27 @@ export default {
     justify-content: flex-start;
 }
 
+.filters .btn {
+    margin-top: 25px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    max-width: 600px;
+}
+
 @media screen and (max-width: 800px) {
+    .form-add-associate .form-add-associate-line {
+        flex-direction: column;
+    }
+
+    .form-add-associate .form-add-associate-line-space {
+        margin: 10px 0px !important;
+    }
+
     .filters {
         flex-direction: column;
         width: 100%;
@@ -269,6 +431,15 @@ export default {
     .card {
         width: 100%;
         margin-top: 10px;
+    }
+
+    .filters .btn {
+        margin-top: 10px;
+    }
+
+    .actions {
+        flex-direction: column;
+        max-width: 100%;
     }
 }
 </style>
