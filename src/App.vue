@@ -106,4 +106,14 @@ body{
 .mt-3 {
   margin-top: 30px;
 }
+
+.form-line-space {
+  margin: 0 10px;
+}
+
+@media screen and (max-width:800px) {
+    .form-line-space {
+        margin: 10px 0px !important;
+    }
+}
 </style>

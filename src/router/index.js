@@ -9,6 +9,7 @@ import AssociateFinancialLifeView from '../views/pages/AssociateFinancialLifeVie
 import RecoverPasswordView from '../views/RecoverPasswordView.vue'
 import ManageReportsView from '@/views/pages/ManageReportsView.vue'
 import ReportsView from '@/views/pages/ReportsView.vue'
+import CashFlowView from '@/views/pages/CashFlowView.vue'
 
 const routes = [
   { path: '/:pathMatch(.*)*', redirect: '/acessar' },
@@ -55,6 +56,11 @@ const routes = [
         path: '/informes',
         name: 'Ver Informes',
         component: ReportsView
+      },
+      {
+        path: '/fluxo-de-caixa',
+        name: 'Fluxo de Caixa',
+        component: CashFlowView
       },
     ]
   },
