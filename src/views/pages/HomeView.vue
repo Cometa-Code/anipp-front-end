@@ -89,7 +89,7 @@ export default {
                     title="Fluxo de caixa" 
                     description="Acompanhe e gerencie o fluxo de caixa da associação."
                     redirect-title="Acompanhar caixa"
-                    redirectPage="/informes"
+                    redirectPage="/fluxo-de-caixa"
                     icon="dollar"
                 />
             </div>

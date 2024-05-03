@@ -19,14 +19,14 @@ export default {
             actualPage: 0,
             totalItems: 0,
             associateTableCategories: [
-                'Método de pagamento',
+                'Meio do crédito',
                 'Tipo de pagamento',
-                'Data de pagamento',
+                'Data do crédito',
                 'Valor do crédito',
                 'Taxa de adesão',
-                'Encargos',
                 'Honorários',
-                'Total pago',
+                'Encargos',
+                'Total',
                 'Observações',
             ],
             totalSumPayments: 0,
@@ -94,9 +94,9 @@ export default {
                     payments.push(item.payment_date);
                     payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
                     payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
-                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
                     payments.push(`R$ ${item.fees.replace('.', ',')}`);
-                    payments.push(`R$ ${parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)}`);
+                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
+                    payments.push(`R$ ${(parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)).toFixed(2).replace(".", ",")}`);
                     payments.push(item.comments);
 
                     this.payments.push(payments);
@@ -136,12 +136,7 @@ export default {
         addPayment() {
             if (
                 !this.addPaymentData.payment_method ||
-                !this.addPaymentData.payment_type ||
-                !this.addPaymentData.payment_date ||
-                !this.addPaymentData.credit_value ||
-                !this.addPaymentData.membership_fee ||
-                !this.addPaymentData.charges ||
-                !this.addPaymentData.fees
+                !this.addPaymentData.payment_type
             ) {
                 return this.notify('Preencha todos os dados obrigatórios para adicionar um pagamento!', 'error');
             }
@@ -152,7 +147,7 @@ export default {
                 user_id: parseInt(this.$route.params.id),
                 payment_method: this.addPaymentData.payment_method,
                 payment_type: this.addPaymentData.payment_type,
-                payment_date: this.addPaymentData.payment_date,
+                payment_date: `${this.addPaymentData.payment_date[8]}${this.addPaymentData.payment_date[9]}/${this.addPaymentData.payment_date[5]}${this.addPaymentData.payment_date[6]}/${this.addPaymentData.payment_date[0]}${this.addPaymentData.payment_date[1]}${this.addPaymentData.payment_date[2]}${this.addPaymentData.payment_date[3]}`,
                 credit_value: parseFloat(this.addPaymentData.credit_value),
                 membership_fee: parseFloat(this.addPaymentData.membership_fee),
                 charges: parseFloat(this.addPaymentData.charges),
@@ -193,7 +188,7 @@ export default {
 
         <section class="form-add-associate">
             <div class="form-add-associate-line">
-                <Input type="text" label="Método de pagamento*" placeholder="PIX" :value="addPaymentData.payment_method" v-model="addPaymentData.payment_method" />
+                <Input type="text" label="Meio do crédito*" placeholder="PIX" :value="addPaymentData.payment_method" v-model="addPaymentData.payment_method" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Tipo de pagamento*" placeholder="Mensalidade" :value="addPaymentData.payment_type" v-model="addPaymentData.payment_type" />
                 <div class="form-add-associate-line-space"></div>
@@ -203,11 +198,11 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Taxa de adesão*" placeholder="127.90" :value="addPaymentData.membership_fee" v-model="addPaymentData.membership_fee" :currencyMask="true" />
+                <Input type="text" label="Taxa de adesão" placeholder="127.90" :value="addPaymentData.membership_fee" v-model="addPaymentData.membership_fee" :currencyMask="true" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Encargos*" placeholder="127.90" :value="addPaymentData.charges" v-model="addPaymentData.charges" :currencyMask="true" />
+                <Input type="text" label="Honorários" placeholder="10/01/2023" :value="addPaymentData.fees" v-model="addPaymentData.fees" :currencyMask="true" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Honorários*" placeholder="10/01/2023" :value="addPaymentData.fees" v-model="addPaymentData.fees" :currencyMask="true" />
+                <Input type="text" label="Encargos" placeholder="127.90" :value="addPaymentData.charges" v-model="addPaymentData.charges" :currencyMask="true" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Observações" placeholder="Esse pagamento foi..." :value="addPaymentData.comments" v-model="addPaymentData.comments" />
             </div>
@@ -221,7 +216,7 @@ export default {
     <section class="bg-see-associates">
         <Head :title="`Vida Financeira - ${associate_name}`" />
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toFixed(2).replace(".", ",") }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
 
         <div v-if="!loadingTable" class="button-add-associate">

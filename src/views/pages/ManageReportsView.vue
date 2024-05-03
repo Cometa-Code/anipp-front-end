@@ -140,6 +140,10 @@ export default {
 
             axios.post('https://files.associados.anipp.org.br/create.php', {
                 file: this.selectedUploadFile
+            }, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                }
             })
             .then(res => {
                 this.createReport.file_name = res.data;
