@@ -101,11 +101,29 @@ export default {
                     selected: false,
                 }
             ],
+            editAssociateStatusFinancialLifeSelect: [
+                {
+                    name: 'Indefinido',
+                    value: 'Indefinido',
+                    selected: true,
+                },
+                {
+                    name: 'Adimplente',
+                    value: 'Adimplente',
+                    selected: false,
+                },
+                {
+                    name: 'Inadimplente',
+                    value: 'Inadimplente',
+                    selected: false,
+                }
+            ],
             editAssociateOtherAssociationsSelect: [],
             editAssociateData: {
                 name: undefined,
                 email: undefined,
                 role: undefined,
+                financial_situation: undefined,
                 password: undefined,
                 document_cpf: undefined,
                 document_rg: undefined,
@@ -319,6 +337,24 @@ export default {
                         this.editAssociateData = this.associatesFullInfos[i];
                     }
                 }
+
+                this.editAssociateStatusFinancialLifeSelect = [
+                    {
+                        name: 'Indefinido',
+                        value: 'Indefinido',
+                        selected: this.editAssociateData.financial_situation == 'Indefinido' ? true : false,
+                    },
+                    {
+                        name: 'Adimplente',
+                        value: 'Adimplente',
+                        selected: this.editAssociateData.financial_situation == 'Adimplente' ? true : false,
+                    },
+                    {
+                        name: 'Inadimplente',
+                        value: 'Inadimplente',
+                        selected: this.editAssociateData.financial_situation == 'Inadimplente' ? true : false,
+                    },
+                ];
 
                 this.editAssociateNationalitySelect = [
                     {
@@ -626,6 +662,8 @@ export default {
                 <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="editAssociateData.name" v-model="editAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="editAssociateData.email" v-model="editAssociateData.email" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Status financeiro" :options="editAssociateStatusFinancialLifeSelect" :value="editAssociateData.financial_situation" v-model="editAssociateData.financial_situation" />
             </div>
 
             <div class="form-add-associate-line">
