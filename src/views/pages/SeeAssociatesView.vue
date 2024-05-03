@@ -560,7 +560,7 @@ export default {
             <p>Função: <span class="blue">{{ selectedAssociate.role == 'associate' ? 'Associado' : selectedAssociate.role == 'admin' && selectedAssociate.is_associate ? 'Administrador e Associado' : selectedAssociate.role == 'admin' ? 'Administrador' : 'Super Administrador' }}</span> </p>
             <p>CPF: <span>{{ selectedAssociate.document_cpf }}</span></p>
             <p>RG: <span>{{ selectedAssociate.document_rg }} - {{ selectedAssociate.document_rg_consignor }}</span></p>
-            <p>Data de filiação: <span>{{ selectedAssociate.affiliation_date }}</span></p>
+            <p>Data de filiação: <span>{{ `${selectedAssociate.affiliation_date[8]}${selectedAssociate.affiliation_date[9]}/${selectedAssociate.affiliation_date[5]}${selectedAssociate.affiliation_date[6]}/${selectedAssociate.affiliation_date[0]}${selectedAssociate.affiliation_date[1]}${selectedAssociate.affiliation_date[2]}${selectedAssociate.affiliation_date[3]}` }}</span></p>
             <p>Nacionalidade: <span>{{ selectedAssociate.nationality }}</span></p>
             <p>Estado civil: <span>{{ selectedAssociate.marital_status }}</span></p>
             <p>Ocupação: <span>{{ selectedAssociate.occupation }}</span></p>

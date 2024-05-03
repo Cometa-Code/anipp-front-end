@@ -74,8 +74,7 @@ export default {
                     let payments = [];
 
                     payments.push(item.payment_method);
-                    payments.push(`${this.payment_date[8]}${this.payment_date[9]}/${this.payment_date[5]}${this.payment_date[6]}/${this.payment_date[0]}${this.payment_date[1]}${this.payment_date[2]}${this.payment_date[3]}`);
-                    payments.push(item.payment_date);
+                    payments.push(`${item.payment_date[8]}${item.payment_date[9]}/${item.payment_date[5]}${item.payment_date[6]}/${item.payment_date[0]}${item.payment_date[1]}${item.payment_date[2]}${item.payment_date[3]}`);
                     payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
                     payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
                     payments.push(`R$ ${item.fees.replace('.', ',')}`);
