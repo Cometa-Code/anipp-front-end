@@ -2,7 +2,13 @@
 export default {
     props: {
         title: {
+            type: String
+        },
+        hasOkButton: {
             type: Boolean
+        },
+        okButtonDescription: {
+            type: String
         }
     },
     methods: {
@@ -11,6 +17,9 @@ export default {
         },
         clickOnCloseButton() {
             return this.$emit('close', 'button');
+        },
+        clickOnOkButton() {
+            return this.$emit('clickOkButton', true);
         }
     }
 }
@@ -23,7 +32,7 @@ export default {
     <section class="bg-modal-simple-modal">
         <div class="simple-modal">
             <header>
-                <h2>Associado</h2>
+                <h2>{{ title }}</h2>
             </header>
 
             <article>
@@ -32,6 +41,7 @@ export default {
 
             <footer>
                 <button class="button-close" @click="clickOnCloseButton">Fechar</button>
+                <button v-if="hasOkButton" class="button-ok" @click="clickOnOkButton">{{ okButtonDescription }}</button>
             </footer>
         </div>
     </section>
@@ -128,5 +138,24 @@ export default {
 .simple-modal footer .button-close:hover {
     background-color: rgb(215, 215, 215);
     transition: .2s;
+}
+
+.button-ok {
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    color: var(--white-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .2s;
+    margin-left: 10px;
+}
+
+.button-ok:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    transition: 0.2s;
 }
 </style>

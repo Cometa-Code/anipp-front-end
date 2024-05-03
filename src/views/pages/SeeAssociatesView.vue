@@ -551,7 +551,7 @@ export default {
 <template>
     <Loader v-if="loader" />
 
-    <SimpleModal v-if="modalAssociateInfos" @close="modalAssociateInfos = false">
+    <SimpleModal v-if="modalAssociateInfos" @close="modalAssociateInfos = false" title="Associado">
         <div class="associate-infos-simple-modal">
             <p>ID: <span>{{ selectedAssociate.id }}</span></p>
             <p>Nome: <span class="blue">{{ selectedAssociate.name }}</span></p>
