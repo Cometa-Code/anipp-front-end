@@ -91,7 +91,7 @@ export default {
 
                     payments.push(item.payment_method); 
                     payments.push(item.payment_type);
-                    payments.push(item.payment_date);
+                    payments.push(`${item.payment_date[8]}${item.payment_date[9]}/${item.payment_date[5]}${item.payment_date[6]}/${item.payment_date[0]}${item.payment_date[1]}${item.payment_date[2]}${item.payment_date[3]}`);
                     payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
                     payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
                     payments.push(`R$ ${item.fees.replace('.', ',')}`);
@@ -147,7 +147,7 @@ export default {
                 user_id: parseInt(this.$route.params.id),
                 payment_method: this.addPaymentData.payment_method,
                 payment_type: this.addPaymentData.payment_type,
-                payment_date: `${this.addPaymentData.payment_date[8]}${this.addPaymentData.payment_date[9]}/${this.addPaymentData.payment_date[5]}${this.addPaymentData.payment_date[6]}/${this.addPaymentData.payment_date[0]}${this.addPaymentData.payment_date[1]}${this.addPaymentData.payment_date[2]}${this.addPaymentData.payment_date[3]}`,
+                payment_date: this.addPaymentData.payment_date,
                 credit_value: parseFloat(this.addPaymentData.credit_value),
                 membership_fee: parseFloat(this.addPaymentData.membership_fee),
                 charges: parseFloat(this.addPaymentData.charges),
@@ -169,6 +169,7 @@ export default {
                 }
                 
                 this.notify('Erro ao adicionar pagamento!', 'error');
+                this.loader = false;
             });
         }
     },
