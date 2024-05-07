@@ -37,7 +37,7 @@ export default {
             exitSum: 0,
             totalSum: 0,
             filtersData: {
-                initial_date: '2018-01-01',
+                initial_date: '2019-11-28',
                 finish_date: this.getCurrentDate(),
             },
             modalManualHistory: false,
@@ -276,7 +276,7 @@ export default {
         </section>
 
         <section class="filters">
-            <Input type="date" label="Desde de:" placeholder="10/01/2023" :value="filtersData.initial_date" v-model="filtersData.initial_date" />
+            <Input type="date" label="Desde:" placeholder="10/01/2023" :value="filtersData.initial_date" v-model="filtersData.initial_date" />
             <div class="form-line-space"></div>
             <Input type="date" label="Até:" placeholder="10/01/2023" :value="filtersData.finish_date" v-model="filtersData.finish_date" />
             <div class="form-line-space"></div>
@@ -286,17 +286,17 @@ export default {
         <section v-if="!loader" class="bg-cards">
             <div class="card">
                 <h2>Entradas</h2>
-                <p class="green">R$ {{ parseFloat(entrySum).toFixed(2).replace('.', ',') }}</p>
+                <p class="green">R$ {{ parseFloat(entrySum).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
             </div>
 
             <div class="card">
                 <h2>Saídas</h2>
-                <p class="red">R$ {{ parseFloat(exitSum).toFixed(2).replace('.', ',') }}</p>
+                <p class="red">R$ {{ parseFloat(exitSum).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
             </div>
 
             <div class="card">
                 <h2>Valor total</h2>
-                <p class="blue">R$ {{ totalSum.toFixed(2).replace('.', ',') }}</p>
+                <p class="blue">R$ {{ parseFloat(totalSum).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
             </div>
         </section>
 

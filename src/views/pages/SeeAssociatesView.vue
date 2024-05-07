@@ -574,7 +574,7 @@ export default {
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
             <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
-            <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active }}</span></p>
+            <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
         </div>
     </SimpleModal>
 
