@@ -45,6 +45,10 @@ export default {
                 fees: 0,
                 comments: '',
             },
+            filtersData: {
+                initial_date: '2019-11-28',
+                finish_date: this.getCurrentDate(),
+            },
         }
     },
     props: {
@@ -65,10 +69,75 @@ export default {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
         },
+        getCurrentDate() {
+            var data = new Date();
+
+            var year = data.getFullYear();
+            var monthly = ('0' + (data.getMonth() + 1)).slice(-2);
+            var day = ('0' + data.getDate()).slice(-2);
+
+            var formatedDate = year + '-' + monthly + '-' + day;
+            return formatedDate;
+        },
+        getNextPaymentFilter() {
+            this.loadingTable = true;
+
+            this.actualPage = 0;
+            this.totalItems = 0;
+            this.payments = [];
+
+            this.$axios.get(`/payments/${this.$route.params.id}?initial_date=${this.filtersData.initial_date}&finish_date=${this.filtersData.finish_date}&items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
+            .then(res => {
+                if (!res.data.data) {
+                    return this.notify('Ocorreu um erro ao buscar o financeiro do usuário', res.data)
+                };
+                const data = res.data.data;
+                
+                this.actualPage += 1;
+                
+                this.totalItems = data.data.total;
+                
+                data.data.next_page_url == null ? this.hasNextPage = false : this.hasNextPage = true;
+                
+                this.totalSumPayments = data.totalSumPayments;
+                this.financial_situation = data.associate_data.financial_situation;
+
+                this.associate_name = data.associate_data.name;
+
+                data.data.data.forEach((item) => {
+                    let payments = [];
+
+                    payments.push(item.payment_method); 
+                    payments.push(item.payment_type);
+                    payments.push(`${item.payment_date[8]}${item.payment_date[9]}/${item.payment_date[5]}${item.payment_date[6]}/${item.payment_date[0]}${item.payment_date[1]}${item.payment_date[2]}${item.payment_date[3]}`);
+                    payments.push(`R$ ${item.credit_value.replace('.', ',')}`);
+                    payments.push(`R$ ${item.membership_fee.replace('.', ',')}`);
+                    payments.push(`R$ ${item.fees.replace('.', ',')}`);
+                    payments.push(`R$ ${item.charges.replace('.', ',')}`);
+                    payments.push(`R$ ${(parseFloat(item.credit_value) + parseFloat(item.membership_fee) + parseFloat(item.charges) + parseFloat(item.fees)).toFixed(2).replace(".", ",")}`);
+                    payments.push(item.comments);
+
+                    this.payments.push(payments);
+                    this.paymentsFullInfos.push(item);
+                });
+
+                this.loadingTable = false;
+            })
+            .catch(err => {
+                console.log(err);
+                switch (err.response.data.message) {
+                    case "Usuário não possui permissões suficientes!":
+                        this.$router.push('/inicio');
+                        break;
+                }
+                
+                this.notify('Erro ao buscar informações!', 'error');
+            })
+        },
         getNextPayment() {
             this.loadingTable = true;
 
-            this.$axios.get(`/payments/${this.$route.params.id}?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
+            this.$axios.get(`/payments/${this.$route.params.id}?initial_date=${this.filtersData.initial_date}&finish_date=${this.filtersData.finish_date}&items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
             .then(res => {
                 if (!res.data.data) {
                     return this.notify('Ocorreu um erro ao buscar o financeiro do usuário', res.data)
@@ -216,6 +285,15 @@ export default {
 
     <section class="bg-see-associates">
         <Head :title="`Vida Financeira - ${associate_name}`" />
+
+        <section class="filters">
+            <Input type="date" label="Desde:" placeholder="10/01/2023" :value="filtersData.initial_date" v-model="filtersData.initial_date" />
+            <div class="form-line-space"></div>
+            <Input type="date" label="Até:" placeholder="10/01/2023" :value="filtersData.finish_date" v-model="filtersData.finish_date" />
+            <div class="form-line-space"></div>
+            <Button type="primary" placeholder="Filtrar" class="btn" @buttonPressed="getNextPaymentFilter" />
+        </section>
+
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
@@ -328,6 +406,18 @@ export default {
     font-weight: 600 !important;
 }
 
+.filters {
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.filters .btn {
+    margin-top: 25px;
+}
+
 @media screen and (max-width:800px) {
     .form-add-associate .form-add-associate-line {
         flex-direction: column;
@@ -335,6 +425,16 @@ export default {
 
     .form-add-associate .form-add-associate-line-space {
         margin: 10px 0px !important;
+    }
+
+    .filters {
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .filters .btn {
+        margin-top: 10px;
     }
 }
 </style>
