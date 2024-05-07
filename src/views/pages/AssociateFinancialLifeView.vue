@@ -49,6 +49,23 @@ export default {
                 initial_date: '2019-11-28',
                 finish_date: this.getCurrentDate(),
             },
+            paymentTypeSelect: [
+                {
+                    name: 'Mensalidade',
+                    value: 'Mensalidade',
+                    selected: true
+                },
+                {
+                    name: 'Semestralidade',
+                    value: 'Semestralidade',
+                    selected: false
+                },
+                {
+                    name: 'Anuidade',
+                    value: 'Anuidade',
+                    selected: false
+                },
+            ],
         }
     },
     props: {
@@ -260,7 +277,7 @@ export default {
             <div class="form-add-associate-line">
                 <Input type="text" label="Meio do crédito*" placeholder="PIX" :value="addPaymentData.payment_method" v-model="addPaymentData.payment_method" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Tipo de pagamento*" placeholder="Mensalidade" :value="addPaymentData.payment_type" v-model="addPaymentData.payment_type" />
+                <Select label="Tipo de pagamento" :options="paymentTypeSelect" :value="addPaymentData.payment_type" v-model="addPaymentData.payment_type" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="date" label="Data do pagamento" placeholder="10/01/2023" :value="addPaymentData.payment_date" v-model="addPaymentData.payment_date" />
                 <div class="form-add-associate-line-space"></div>
