@@ -298,7 +298,7 @@ export default {
                 data.data.forEach((item) => {
                     let associateData = [];
 
-                    associateData.push(item.name); 
+                    associateData.push(item.other_associations == 'Sim' ? `★ ${item.name}` : item.name); 
                     associateData.push(item.email);
                     associateData.push(item.document_cpf);
                     associateData.push(item.registration_number);
