@@ -22,7 +22,7 @@ export default {
                 'Meio do crédito',
                 'Tipo de pagamento',
                 'Data do crédito',
-                'Valor do crédito',
+                'Contribuição',
                 'Taxa de adesão',
                 'Honorários',
                 'Encargos',
@@ -281,7 +281,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="date" label="Data do pagamento" placeholder="10/01/2023" :value="addPaymentData.payment_date" v-model="addPaymentData.payment_date" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Valor do crédito" placeholder="127.90" :value="addPaymentData.credit_value" v-model="addPaymentData.credit_value" :currencyMask="true" />
+                <Input type="text" label="Contribuição" placeholder="127.90" :value="addPaymentData.credit_value" v-model="addPaymentData.credit_value" :currencyMask="true" />
             </div>
 
             <div class="form-add-associate-line">

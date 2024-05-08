@@ -21,7 +21,7 @@ export default {
             associateTableCategories: [
                 'Meio do crédito',
                 'Data do crédito',
-                'Valor do crédito',
+                'Contribuição',
                 'Taxa de adesão',
                 'Honorários',
                 'Encargos',

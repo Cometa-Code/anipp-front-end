@@ -727,6 +727,11 @@ export default {
             <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
         </div>
 
+        <!-- <div class="filter-associates">
+            <Input type="text" label="Filtrar por Nome, E-mail ou CPF" placeholder="Digite os termos que deseja encontrar!" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
+            <Button type="primary"></Button>
+        </div> -->
+
         <Table v-if="!loadingTable" :hasActions="true" :actions="associatesTableActions" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="associates" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
     </section>
 </template>
@@ -829,6 +834,11 @@ export default {
 .red {
     color: rgb(162, 1, 1);
     font-weight: 600 !important;
+}
+
+.filter-associates {
+    display: flex;
+    margin-bottom: 30px;
 }
 
 @media screen and (max-width:800px) {
