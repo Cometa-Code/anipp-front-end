@@ -14,7 +14,7 @@ export default {
 <template>
     <section class="bg-button">
         <button @click="$emit('buttonPressed')" :class="[type == 'primary' ? 'primary' : type == 'secondary' ? 'secondary' : 'tertiary']">
-            {{ placeholder }}
+            <slot></slot> {{ placeholder }}
         </button>
     </section>
 </template>

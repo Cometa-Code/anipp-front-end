@@ -298,7 +298,7 @@ export default {
                 data.data.forEach((item) => {
                     let associateData = [];
 
-                    associateData.push(item.name); 
+                    associateData.push(item.other_associations == 'Sim' ? `★ ${item.name}` : item.name); 
                     associateData.push(item.email);
                     associateData.push(item.document_cpf);
                     associateData.push(item.registration_number);
@@ -574,7 +574,7 @@ export default {
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
             <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
-            <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active }}</span></p>
+            <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
         </div>
     </SimpleModal>
 
@@ -727,6 +727,11 @@ export default {
             <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
         </div>
 
+        <!-- <div class="filter-associates">
+            <Input type="text" label="Filtrar por Nome, E-mail ou CPF" placeholder="Digite os termos que deseja encontrar!" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
+            <Button type="primary"></Button>
+        </div> -->
+
         <Table v-if="!loadingTable" :hasActions="true" :actions="associatesTableActions" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="associates" @loadMore="getNextPage" @clickAction="associatesTableClickAction" />
     </section>
 </template>
@@ -829,6 +834,11 @@ export default {
 .red {
     color: rgb(162, 1, 1);
     font-weight: 600 !important;
+}
+
+.filter-associates {
+    display: flex;
+    margin-bottom: 30px;
 }
 
 @media screen and (max-width:800px) {
