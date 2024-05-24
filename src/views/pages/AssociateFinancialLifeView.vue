@@ -257,6 +257,9 @@ export default {
                 this.notify('Erro ao adicionar pagamento!', 'error');
                 this.loader = false;
             });
+        },
+        returnToPage() {
+            this.$router.push('/associados');
         }
     },
     components: { Head, Table, SimpleModal, Button, Input, Select, Loader }
@@ -301,6 +304,14 @@ export default {
     </section>
 
     <section class="bg-see-associates">
+        <div @click="returnToPage" class="return-to-page">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+            </svg>
+
+            <p>Voltar para a tela de Associados</p>
+        </div>
+
         <Head :title="`Vida Financeira - ${associate_name}`" />
 
         <section class="filters">
@@ -433,6 +444,35 @@ export default {
 
 .filters .btn {
     margin-top: 25px;
+}
+
+.return-to-page {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.return-to-page .icon {
+    width: 18px;
+    margin-right: 5px;
+    color: #baa34f;
+    transition: .2s;
+}
+
+.return-to-page p {
+    font-size: 18px;
+    color: #baa34f;
+    transition: .2s;
+}
+
+.return-to-page:hover .icon {
+    color: #b2952d;
+    transition: .2s;
+}
+
+.return-to-page:hover p {
+    color: #b2952d;
+    transition: .2s;
 }
 
 @media screen and (max-width:800px) {
