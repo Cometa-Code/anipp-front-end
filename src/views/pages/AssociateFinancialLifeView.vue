@@ -122,14 +122,16 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                this.totalCreditValue = data.totalCreditValue;
+                if (data.totalSumPayments > 0) {
+                    this.totalCreditValue = data.totalCreditValue;
 
-                this.totalMembershipFee = data.totalMembershipFee;
+                    this.totalMembershipFee = data.totalMembershipFee;
 
-                this.totalCharges = data.totalCharges;
+                    this.totalCharges = data.totalCharges;
 
-                this.totalFees = data.totalFees;
-
+                    this.totalFees = data.totalFees;
+                }
+                
                 this.financial_situation = data.associate_data.financial_situation;
 
                 this.associate_name = data.associate_data.name;
@@ -182,13 +184,15 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                this.totalCreditValue = data.totalCreditValue;
+                if (data.totalSumPayments > 0) {
+                    this.totalCreditValue = data.totalCreditValue;
 
-                this.totalMembershipFee = data.totalMembershipFee;
+                    this.totalMembershipFee = data.totalMembershipFee;
 
-                this.totalCharges = data.totalCharges;
+                    this.totalCharges = data.totalCharges;
 
-                this.totalFees = data.totalFees;
+                    this.totalFees = data.totalFees;
+                }
 
                 this.financial_situation = data.associate_data.financial_situation;
 
