@@ -7,6 +7,7 @@ import Input from '@/components/Input';
 import Select from '@/components/Select';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import * as XLSX from 'xlsx';
 
 export default {
     props: {
@@ -17,6 +18,7 @@ export default {
     data() {
         return {
             loader: true,
+            jsonData: [],
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -65,6 +67,7 @@ export default {
                     selected: false
                 },
             ],
+            selectedUploadStatementFile: null
         }
     },
     created() {
@@ -215,7 +218,73 @@ export default {
             };
 
             this.modalManualHistory = false;
-        }
+        },
+        loadStatement() {
+            const input = document.getElementById("upload-statements");
+            
+            input.click();
+        },
+        uploadStatementFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.selectedUploadStatementFile = file;
+            } else {
+                console.error('No file selected');
+            }
+        },
+        sendStatement() {
+            console.log('comecou')
+            var file = this.selectedUploadStatementFile;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Considerando que os dados estão na primeira planilha
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // Converte a planilha em JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                this.jsonData = jsonData;
+
+                this.sendDataToApi();
+            };
+            reader.readAsArrayBuffer(file);
+        },
+        async sendDataToApi() {
+            this.notify('Estamos fazendo a leitura do seu extrato, aguarde finalizar!', 'info');
+            this.loader = true;
+            console.log('foi chamado')
+            const chunkSize = 50;
+            for (let i = 0; i < this.jsonData.length; i += chunkSize) {
+                const chunk = this.jsonData.slice(i, i + chunkSize);
+                await this.sendChunk(chunk);
+                await this.delay(5000);
+            }
+
+            this.notify('Verifique o seu e-mail para resolver possíveis problemas!', 'warning');
+            this.notify('Extrato lido com sucesso!', 'success');
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 4000);
+        },
+        async sendChunk(chunk) {
+            console.log('começando apis')
+            try {
+                const response = await this.$axios.post('/cash_flow/read_extract', chunk);
+                console.log('Lote enviado com sucesso:', response.data);
+            } catch (error) {
+                console.error('Erro ao enviar lote:', error);
+            }
+        },
+        
+        delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
     },
     components: { Head, Table, Button, Input, Select, Loader }
 }
@@ -272,7 +341,17 @@ export default {
         <section class="actions">
             <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistory = true" />
             <div class="form-line-space"></div>
-            <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="" />
+            <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="loadStatement" />
+            <div class="form-line-space"></div>
+            <div v-if="selectedUploadStatementFile" class="search-button">
+                <Button type="secondary" class="btn" @buttonPressed="sendStatement">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    </svg>
+                </Button>
+            </div>
+
+            <input @change="uploadStatementFile" type="file" name="upload-statement" id="upload-statements" accept=".xlsx" style="display:none">
         </section>
 
         <section class="filters">
@@ -390,6 +469,14 @@ export default {
     color: rgb(78, 78, 255);
 }
 
+.search-button {
+    width: 150px;
+}
+
+.btn .icon {
+    width: 20px;
+}
+
 .filters {
     max-width: 300px;
     display: flex;
@@ -407,6 +494,10 @@ export default {
     justify-content: flex-start;
     margin-bottom: 20px;
     max-width: 600px;
+}
+
+#upload-statement {
+    display: none;
 }
 
 @media screen and (max-width: 800px) {
@@ -431,6 +522,10 @@ export default {
     .card {
         width: 100%;
         margin-top: 10px;
+    }
+
+    .search-button {
+        width: 100%;
     }
 
     .filters .btn {
