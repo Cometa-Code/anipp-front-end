@@ -12,6 +12,7 @@ import 'vue3-toastify/dist/index.css';
 export default {
     data() {
         return {
+            filterTerms: '',
             loader: false,
             loadingTable: true,
             hasNextPage: false,
@@ -124,7 +125,7 @@ export default {
                 email: undefined,
                 role: undefined,
                 financial_situation: undefined,
-                password: undefined,
+                password: 't3MpP4sswo0rd2981s',
                 document_cpf: undefined,
                 document_rg: undefined,
                 date_of_birth: undefined,
@@ -149,7 +150,7 @@ export default {
                 name: '',
                 email: '',
                 role: 'associate',
-                password: '',
+                password: 't3MpP4sswo0rd2981s',
                 document_cpf: '',
                 document_rg: '',
                 date_of_birth: '',
@@ -223,7 +224,7 @@ export default {
                 name: undefined,
                 email: undefined,
                 role: undefined,
-                password: undefined,
+                password: 't3MpP4sswo0rd2981s',
                 document_cpf: undefined,
                 document_rg: undefined,
                 date_of_birth: undefined,
@@ -254,7 +255,7 @@ export default {
                 name: '',
                 email: '',
                 role: 'associate',
-                password: '',
+                password: 't3MpP4sswo0rd2981s',
                 document_cpf: '',
                 document_rg: '',
                 date_of_birth: '',
@@ -284,7 +285,7 @@ export default {
         getNextPage() {
             this.loadingTable = true;
 
-            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
+            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}`)
             .then(res => {
                 const data = res.data.data;
                 console.log(data);
@@ -563,7 +564,7 @@ export default {
             <p>Data de filiação: <span>{{ `${selectedAssociate.affiliation_date[8]}${selectedAssociate.affiliation_date[9]}/${selectedAssociate.affiliation_date[5]}${selectedAssociate.affiliation_date[6]}/${selectedAssociate.affiliation_date[0]}${selectedAssociate.affiliation_date[1]}${selectedAssociate.affiliation_date[2]}${selectedAssociate.affiliation_date[3]}` }}</span></p>
             <p>Nacionalidade: <span>{{ selectedAssociate.nationality }}</span></p>
             <p>Estado civil: <span>{{ selectedAssociate.marital_status }}</span></p>
-            <p>Ocupação: <span>{{ selectedAssociate.occupation }}</span></p>
+            <p>Profissão: <span>{{ selectedAssociate.occupation }}</span></p>
             <p>Endereço: <span>{{ selectedAssociate.address }}</span></p>
             <p>Cidade/Estado: <span>{{ selectedAssociate.address_city_state }}</span></p>
             <p>CEP: <span>{{ selectedAssociate.address_zipcode }}</span></p>
@@ -590,16 +591,16 @@ export default {
                 <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="addAssociateData.name" v-model="addAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="addAssociateData.email" v-model="addAssociateData.email" />
-                <div class="form-add-associate-line-space"></div>
-                <Select label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
+                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Senha do usuário*" placeholder="●●●●●●●●●●●●" :value="addAssociateData.password" v-model="addAssociateData.password" />
-                <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Documento CPF*" placeholder="00000000000" :onlyNumbers="true" :value="addAssociateData.document_cpf" v-model="addAssociateData.document_cpf" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-line">
@@ -619,7 +620,7 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Ocupação" placeholder="Administrador" :value="addAssociateData.occupation" v-model="addAssociateData.occupation" />
+                <Input type="text" label="Profissão" placeholder="Administrador" :value="addAssociateData.occupation" v-model="addAssociateData.occupation" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" :value="addAssociateData.address" v-model="addAssociateData.address" />
                 <div class="form-add-associate-line-space"></div>
@@ -641,7 +642,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="addAssociateData.account_bank" v-model="addAssociateData.account_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
+                
             </div>
 
             <div class="form-add-associate-button">
@@ -667,8 +668,8 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Select label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
-                <div class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
+                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
                 <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
@@ -691,7 +692,7 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Ocupação" placeholder="Administrador" :value="editAssociateData.occupation" v-model="editAssociateData.occupation" />
+                <Input type="text" label="Profissão" placeholder="Administrador" :value="editAssociateData.occupation" v-model="editAssociateData.occupation" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Endereço" placeholder="Rua das Flores, 179, Apartamento 303" :value="editAssociateData.address" v-model="editAssociateData.address" />
                 <div class="form-add-associate-line-space"></div>
@@ -727,6 +728,16 @@ export default {
             <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
         </div>
 
+        <div class="search-associate-div">
+            <Input type="text" label="Busque por termos" placeholder="Nome, e-mail ou documento" :value="filterTerms" v-model="filterTerms" />
+
+            <Button class="button-search" type="primary" @buttonPressed="associatesFullInfos = []; associates = []; actualPage = 0; getNextPage()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </Button>
+        </div>
+
         <!-- <div class="filter-associates">
             <Input type="text" label="Filtrar por Nome, E-mail ou CPF" placeholder="Digite os termos que deseja encontrar!" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
             <Button type="primary"></Button>
@@ -737,6 +748,23 @@ export default {
 </template>
 
 <style scoped>
+.button-search {
+    width: 80px;
+    margin-left: 10px;
+}
+
+.button-search .icon {
+    width: 18px;
+}
+
+.search-associate-div {
+    width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: flex-end;
+}
+
 .bg-add-associate {
     width: 100%;
     height: 100%;

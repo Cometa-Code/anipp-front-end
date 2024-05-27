@@ -24,7 +24,9 @@ export default {
             itemsPerPage: 10,
             actualPage: 0,
             totalItems: 0,
+            editManualHistoryId: undefined,
             cashFlowTableCategories: [
+                'ID',
                 'Tipo',
                 'Data',
                 'Valor',
@@ -35,6 +37,7 @@ export default {
                 'Descrição',
             ],
             cashFlowItems: [],
+            cashFlowItemsFullInfos: [],
             entrySum: 0,
             exitSum: 0,
             totalSum: 0,
@@ -46,6 +49,16 @@ export default {
             addManualHistoryData: {
                 type: "Entrada",
                 date: this.getCurrentDate(),
+                origin_agency: '',
+                allotment: '',
+                document_number: '',
+                history_code: '',
+                history: '',
+                history_detail: '',
+                value: 0,
+                description: '',
+            },
+            editManualHistoryData: {
                 origin_agency: '',
                 allotment: '',
                 document_number: '',
@@ -67,7 +80,10 @@ export default {
                     selected: false
                 },
             ],
-            selectedUploadStatementFile: null
+            selectedUploadStatementFile: null,
+            cashFlowTableActions: [
+                'pencil-square'
+            ],
         }
     },
     created() {
@@ -124,6 +140,7 @@ export default {
                 data.data.data.forEach((item) => {
                     let cashFlows = [];
 
+                    cashFlows.push(item.id);
                     cashFlows.push(item.type);
                     cashFlows.push(item.date);
                     cashFlows.push(`R$ ${item.value.replace('.', ',')}`);
@@ -168,6 +185,7 @@ export default {
                 data.data.data.forEach((item) => {
                     let cashFlows = [];
 
+                    cashFlows.push(item.id);
                     cashFlows.push(item.type);
                     cashFlows.push(`${item.date[8]}${item.date[9]}/${item.date[5]}${item.date[6]}/${item.date[0]}${item.date[1]}${item.date[2]}${item.date[3]}`);
                     cashFlows.push(`R$ ${item.value.replace('.', ',')}`);
@@ -178,6 +196,7 @@ export default {
                     cashFlows.push(item.description);
 
                     this.cashFlowItems.push(cashFlows);
+                    this.cashFlowItemsFullInfos.push(item);
                 });
 
                 this.loader = false;
@@ -281,10 +300,41 @@ export default {
                 console.error('Erro ao enviar lote:', error);
             }
         },
-        
         delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         },
+        cashFlowTableClickAction(event) {
+            if (event.eventType == 'pencil-square') {
+                console.log(event);
+                console.log(this.cashFlowItemsFullInfos);
+                for (let i = 0; i < this.cashFlowItemsFullInfos.length; i++) {
+                    if (this.cashFlowItemsFullInfos[i].id === event.data[0]) {
+                        this.editManualHistoryData = this.cashFlowItemsFullInfos[i];
+                        this.editManualHistoryId = this.cashFlowItemsFullInfos[i].id;
+                    }
+                }
+            }
+
+            this.modalManualHistoryType = 'edit';
+            this.modalManualHistory = true;
+        },
+        editCashFlow() {
+            this.loader = true;
+
+            this.$axios.put(`/cash_flow/${this.editManualHistoryId}`, this.editManualHistoryData)
+            .then(res =>  {
+                this.notify('Dados atualizados com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro durante a atualização dos dados e não foi possível finalizar!', 'error');
+
+                this.loader = false;
+            })
+        }
     },
     components: { Head, Table, Button, Input, Select, Loader }
 }
@@ -294,13 +344,39 @@ export default {
     <Loader v-if="loader" />
 
     <section v-if="modalManualHistory" class="bg-add-associate">
-        <Head title="Adicionar histórico manual" />
+        <Head :title="modalManualHistoryType == 'add' ? `Adicionar histórico manual` : `Editar histórico`" />
 
         <div @click="closeModalManualHistory" class="close-add-associate">
             x
         </div>
 
-        <section class="form-add-associate">
+        <section v-if="modalManualHistoryType == 'edit'" class="form-add-associate">
+            <div class="form-add-associate-line">
+                <Input type="text" label="Agência de origem" placeholder="0001" :value="editManualHistoryData.origin_agency" v-model="editManualHistoryData.origin_agency" :onlyNumbers="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Lote" placeholder="54875" :value="editManualHistoryData.allotment" v-model="editManualHistoryData.allotment" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Número do documento" placeholder="54875" :value="editManualHistoryData.document_number" v-model="editManualHistoryData.document_number" :onlyNumbers="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Código do histórico" placeholder="877" :value="editManualHistoryData.history_code" v-model="editManualHistoryData.history_code" :onlyNumbers="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Valor" placeholder="200.00" :value="editManualHistoryData.value" v-model="editManualHistoryData.value" :currencyMask="true" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Descrição" placeholder="Recebimento de mensalidade de Fulano Ciclano" :value="editManualHistoryData.description" v-model="editManualHistoryData.description" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Editar histórico" @buttonPressed="editCashFlow" />
+            </div>
+        </section>
+
+        <section v-if="modalManualHistoryType == 'add'" class="form-add-associate">
             <div class="form-add-associate-line">
                 <Select label="Tipo" :options="typeSelectManualHistory" :value="addManualHistoryData.type" v-model="addManualHistoryData.type" />
                 <div class="form-add-associate-line-space"></div>
@@ -339,7 +415,7 @@ export default {
         <Head title="Fluxo de Caixa" />
 
         <section class="actions">
-            <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistory = true" />
+            <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
             <div class="form-line-space"></div>
             <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="loadStatement" />
             <div class="form-line-space"></div>
@@ -379,7 +455,7 @@ export default {
             </div>
         </section>
 
-        <Table v-if="!loader" :hasActions="false" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" />
+        <Table v-if="!loader" :hasActions="true" :actions="cashFlowTableActions" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" @clickAction="cashFlowTableClickAction" />
     </section>
 </template>
 
