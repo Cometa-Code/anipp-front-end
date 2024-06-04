@@ -570,7 +570,7 @@ export default {
             <p>CEP: <span>{{ selectedAssociate.address_zipcode }}</span></p>
             <p>Telefone: <span>{{ selectedAssociate.phone_ddd }} {{ selectedAssociate.phone_number }}</span></p>
             <p>Múltiplos pagamentos: <span :class="selectedAssociate.other_associations == 'Sim' ? 'orange' : ''">{{ selectedAssociate.other_associations }}</span></p>
-            <p>Código do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
+            <p>Número do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
             <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation }}</span></p>
@@ -636,7 +636,7 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
+                <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" />
                 <div class="form-add-associate-line-space"></div>
@@ -708,7 +708,7 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
+                <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" />
                 <div class="form-add-associate-line-space"></div>
