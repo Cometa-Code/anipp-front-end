@@ -29,6 +29,9 @@ export default {
             ],
             totalSumPayments: 0,
             totalCreditValue: 0,
+            totalCreditValueMonthly: 0,
+            totalCreditValueSemiannual: 0,
+            totalCreditValueAnnual: 0,
             totalMembershipFee: 0,
             totalCharges: 0,
             totalFees: 0,
@@ -91,8 +94,11 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                if (data.totalSumPayments > 0) {
+                if (data.totalSumPayments >= 0) {
                     this.totalCreditValue = data.totalCreditValue;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
 
                     this.totalMembershipFee = data.totalMembershipFee;
 
@@ -149,8 +155,11 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                if (data.totalSumPayments > 0) {
+                if (data.totalSumPayments >= 0) {
                     this.totalCreditValue = data.totalCreditValue;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueSemiannual = data.totalCreditValueSemiannual;
+                    this.totalCreditValueAnnual = data.totalCreditValueAnnual;
     
                     this.totalMembershipFee = data.totalMembershipFee;
     
@@ -210,6 +219,9 @@ export default {
 
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Mensal: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueMonthly).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Semestral: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueSemiannual).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Anual: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueAnnual).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Taxa de Adesão: <span id="see-associates-total-number">R$ {{ parseFloat(totalMembershipFee).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Honorários: <span id="see-associates-total-number">R$ {{ parseFloat(totalFees).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Encargos: <span id="see-associates-total-number">R$ {{ parseFloat(totalCharges).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>

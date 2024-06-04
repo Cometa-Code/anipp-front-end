@@ -17,6 +17,8 @@ export default {
         return {
             loader: false,
             editUserData: {
+                document_rg: '',
+                document_rg_consignor: '',
                 nationality: '',
                 marital_status: '',
                 occupation: '',
@@ -53,6 +55,9 @@ export default {
                 selected: this.userData.nationality == 'Indefinido' ? true : false,
             }
         ];
+
+        this.editUserData.document_rg = this.userData.document_rg
+        this.editUserData.document_rg_consignor = this.userData.document_rg_consignor
 
         this.editUserData.nationality = this.userData.nationality
 
@@ -187,9 +192,9 @@ export default {
             </div>
 
             <div class="form-user-data-line">
-                <Input type="text" label="Seu documento RG" placeholder="Seu RG aqui!" :value="userData.document_rg" :disabled="true" />
+                <Input type="text" label="Seu documento RG" placeholder="Seu RG aqui!" :value="editUserData.document_rg" v-model="editUserData.document_rg" />
                 <div class="form-user-data-line-space"></div>
-                <Input type="text" label="Orgão expedidor RG" placeholder="Expedidor do seu RG aqui!" :value="userData.document_rg_consignor" :disabled="true" />
+                <Input type="text" label="Orgão expedidor RG" placeholder="Expedidor do seu RG aqui!" :value="editUserData.document_rg_consignor" v-model="editUserData.document_rg_consignor" />
             </div>
 
             <div class="form-user-data-line">
