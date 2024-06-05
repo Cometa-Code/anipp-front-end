@@ -19,6 +19,9 @@ export default {
         currencyMask: {
             type: Boolean
         },
+        agencyBankMask: {
+            type: Boolean
+        },
         modelValue: {
             type: String
         },
@@ -27,6 +30,9 @@ export default {
         },
         disabled: {
             type: Boolean
+        },
+        maxLength: {
+            type: Number
         }
     },
     emits: ["update:modelValue"],
@@ -37,6 +43,21 @@ export default {
     },
     methods: {
         emitContent(event) {
+            if (this.agencyBankMask) {
+                const newValue = event.target.value.replace(/\D/g, '');
+                    event.target.value = newValue;
+
+                    var n = undefined;
+                    
+                    if (newValue.length > 4) {
+                        n = newValue.slice(0, -1) + '-' + newValue.slice(-1);
+
+                        return this.$emit('update:modelValue', n);
+                    }
+
+                    return this.$emit('update:modelValue', newValue);
+            }
+
             if (this.currencyMask) {
                     const newValue = event.target.value.replace(/\D/g, '');
                     event.target.value = newValue;
@@ -69,7 +90,7 @@ export default {
     <section class="bg-input">
         <label :for="inputName" class="label-input">{{ label }}</label>
 
-        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue" :value="value" :disabled="disabled" />
+        <input :type="type" :placeholder="placeholder" :name="inputName" class="input" @input="emitContent" :input="modelValue" :value="value" :disabled="disabled" :maxlength="maxLength" />
     </section>
 </template>
 

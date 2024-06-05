@@ -334,7 +334,7 @@ export default {
             <div class="form-user-data-line">
                 <Input type="text" label="DDD do telefone" placeholder="11" :value="editUserData.phone_ddd" v-model="editUserData.phone_ddd" :only-numbers="true" />
                 <div class="form-user-data-line-space"></div>
-                <Input type="text" label="Número do telefone" placeholder="999999999" :value="editUserData.phone_number" v-model="editUserData.phone_number" :only-numbers="true" />
+                <Input type="text" label="Número do Whatsapp" placeholder="999999999" :value="editUserData.phone_number" v-model="editUserData.phone_number" :only-numbers="true" />
             </div>
 
             <div class="form-button">

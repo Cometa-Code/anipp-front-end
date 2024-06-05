@@ -678,13 +678,13 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="DDD Telefônico" placeholder="11" :value="addAssociateData.phone_ddd" v-model="addAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="addAssociateData.phone_number" v-model="addAssociateData.phone_number" />
+                <Input type="text" label="Número do Whatsapp" placeholder="99999-9999" :value="addAssociateData.phone_number" v-model="addAssociateData.phone_number" />
             </div>
 
             <div class="form-add-associate-line">
                 <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" />
+                <Input type="text" label="Agência bancária" placeholder="0001" :agencyBankMask="true" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" :maxLength="5" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="addAssociateData.account_bank" v-model="addAssociateData.account_bank" />
                 <div class="form-add-associate-line-space"></div>
@@ -750,13 +750,13 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="DDD Telefônico" placeholder="11" :value="editAssociateData.phone_ddd" v-model="editAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="editAssociateData.phone_number" v-model="editAssociateData.phone_number" />
+                <Input type="text" label="Número do Whatsapp" placeholder="99999-9999" :value="editAssociateData.phone_number" v-model="editAssociateData.phone_number" />
             </div>
 
             <div class="form-add-associate-line">
                 <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" />
+                <Input type="text" label="Agência bancária" placeholder="0001" :agencyBankMask="true" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" :maxLength="5" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
             </div>
