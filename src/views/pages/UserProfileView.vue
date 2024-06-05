@@ -6,6 +6,7 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Select from '@/components/Select';
 import Loader from '@/components/Loader';
+import Table from '@/components/Table';
 
 export default {
     props: {
@@ -15,7 +16,7 @@ export default {
     },
     data() {
         return {
-            loader: false,
+            loader: true,
             editUserData: {
                 document_rg: '',
                 document_rg_consignor: '',
@@ -34,7 +35,26 @@ export default {
                 actual_password: '',
                 new_password: '',
                 confirm_new_password: '',
-            }
+            },
+            addDependentData: {
+                name: '',
+                email: '',
+                phone: '',
+                degree_of_kinship: '',
+            },
+            dependentsTableActions: [
+                'trash'
+            ],
+            dependentsTableCategories: [
+                'ID',
+                'Nome',
+                'Telefone',
+                'Email',
+                'Grau de parentesco',
+            ],
+            dependentsTableItems: [],
+            dependentsTableItemsFullInfos: [],
+            modalAddDependent: false,
         }
     },
     created() {
@@ -103,6 +123,30 @@ export default {
         this.editUserData.phone_ddd = this.userData.phone_ddd;
         this.editUserData.phone_number = this.userData.phone_number;
         this.editUserData.date_of_birth = this.userData.date_of_birth;
+
+        this.$axios.get('/user/dependents')
+        .then(res => {
+            res.data.data.forEach((item) => {
+                let dependents = [];
+
+                dependents.push(item.id);
+                dependents.push(item.name);
+                dependents.push(item.phone);
+                dependents.push(item.email);
+                dependents.push(item.degree_of_kinship);
+
+                this.dependentsTableItems.push(dependents);
+                this.dependentsTableItemsFullInfos.push(item);
+            });
+
+            console.log(this.dependentsTableItems);
+            this.loader = false;
+        })
+        .catch(err => {
+            this.notify('Ocorreu um erro ao tentar buscar os seus dependentes!', 'error');
+
+            this.loader = false;
+        })
     },
     methods: {
         notify(text, type) {
@@ -170,16 +214,88 @@ export default {
 
                 this.loader = false;
             })
+        },
+        dependentsTableClickAction(event) {
+            if (event.eventType == 'trash') {
+                this.loader = true;
+
+                this.$axios.delete(`/user/dependents/${event.data[0]}`)
+                .then(res => {
+                    this.notify('Dependente removido com sucesso!', 'success');
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                })
+                .catch(err => {
+                    this.notify('Ocorreu um erro e não foi possível remover esse dependente', 'error');
+
+                    this.loader = false;
+                });
+            }
+        },
+        addDependentF() {
+            this.loader = true;
+
+            if (
+                !this.addDependentData.name,
+                !this.addDependentData.email,
+                !this.addDependentData.degree_of_kinship
+            ) {
+                this.loader = false;
+
+                return this.notify('Para adicionar um novo dependente, preencha todos os dados', 'error');
+            }
+
+            this.$axios.post('/user/dependents', this.addDependentData)
+            .then(res => {
+                this.notify('Dependente adicionado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro ao tentar adicionar um novo dependente!', 'error');
+
+                this.loader = false;
+            })
         }
     },
-    components: { Head, Input, Select, Button, Loader }
+    components: { Head, Input, Select, Button, Loader, Table }
 }
 </script>
 
 <template>
     <Loader v-if="loader" />
 
-    <section class="bg-user-profile">
+    <section v-if="modalAddDependent" class="bg-add-associate">
+        <Head title="Adicionar dependente" />
+
+        <div @click="modalAddDependent = false" class="close-add-associate">
+            x
+        </div>
+
+        <section class="form-add-associate">
+            <div class="form-add-associate-line">
+                <Input type="text" label="Nome do dependente*" placeholder="João Pedro Alves" :value="addDependentData.name" v-model="addDependentData.name" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="email" label="E-mail do dependente*" placeholder="joaopedroalves@anipp.org.br" :value="addDependentData.email" v-model="addDependentData.email" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Telefone do dependente" placeholder="xxxxx-xxxx" :value="addDependentData.phone" v-model="addDependentData.phone" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="email" label="Grau de parentesco*" placeholder="Pai/Mãe Padrasto/Madastra" :value="addDependentData.degree_of_kinship" v-model="addDependentData.degree_of_kinship" />
+            </div>
+
+            <div class="form-add-associate-button">
+                <Button type="primary" placeholder="Adicionar dependente" @buttonPressed="addDependentF" />
+            </div>
+        </section>
+    </section>
+
+    <section v-if="!loader" class="bg-user-profile">
         <Head title="Meu perfil" />
         <p class="user-profile-info">Olá, você está logado como <span class="gold">{{ userData.role == 'admin' && userData.is_associate == 1 ? 'administrador e associado' : userData.role == 'admin' || userData.role == 'superadmin' ? 'administrador' : 'associado' }}!</span></p>
         <p v-if="userData.registration_number != null" class="user-profile-info">Número de matrícula: <span class="gold">{{ userData.registration_number }}</span></p>
@@ -224,6 +340,16 @@ export default {
             <div class="form-button">
                 <Button type="primary" placeholder="Salvar dados" @buttonPressed="updateUserData" />
             </div>
+        </section>
+
+        <section class="form-user-data manage-dependents">
+            <h2>Gerencie os seus dependentes</h2>
+            
+            <div class="form-button add-dependent-button">
+                <Button type="primary" placeholder="+ Adicionar dependente" @buttonPressed="modalAddDependent = true" />
+            </div>
+
+            <Table v-if="!loader" :hasActions="true" :actions="dependentsTableActions" :hasNextPage="false" :headers="dependentsTableCategories" :contents="dependentsTableItems" @clickAction="dependentsTableClickAction" />
         </section>
 
         <section class="form-user-data">
@@ -282,6 +408,74 @@ export default {
 
 .form-user-data .form-user-data-line .form-user-data-line-space {
     margin: 0px 10px;
+}
+
+.manage-dependents h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: rgb(42, 42, 42);
+}
+
+.add-dependent-button {
+    margin-bottom: 30px;
+}
+
+.form-add-associate {
+    margin-bottom: 150px;
+}
+
+.form-add-associate .form-add-associate-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1600px;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+
+.form-add-associate .form-add-associate-line .form-add-associate-line-space {
+    margin: 0px 10px;
+}
+
+.bg-add-associate {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 18;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-y: auto;
+    padding: 0px 30px;
+}
+
+.bg-add-associate .close-add-associate {
+    position: absolute;
+    top: 22px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.form-add-associate {
+    margin-bottom: 150px;
+}
+
+.form-add-associate .form-add-associate-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1600px;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+
+.form-add-associate .form-add-associate-line .form-add-associate-line-space {
+    margin: 0px 10px;
+}
+
+.form-add-associate-button {
+    width: 100%;
 }
 
 @media screen and (max-width:800px) {
