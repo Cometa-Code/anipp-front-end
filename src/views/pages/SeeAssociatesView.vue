@@ -146,6 +146,8 @@ export default {
                 agency_bank: undefined,
                 account_bank: undefined,
                 is_associate: undefined,
+                bank_identifier_a: undefined,
+                bank_identifier_b: undefined,
             },
             addAssociateData: {
                 name: '',
@@ -250,6 +252,8 @@ export default {
                 agency_bank: undefined,
                 account_bank: undefined,
                 is_associate: undefined,
+                bank_identifier_a: undefined,
+                bank_identifier_b: undefined,
             };
 
             this.editAssociateRoleSelect = [];
@@ -759,6 +763,12 @@ export default {
                 <Input type="text" label="Agência bancária" placeholder="0001" :agencyBankMask="true" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" :maxLength="5" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Identificador do extrato (Para PIX)" placeholder="000CPFDASTRANSFERENCIAS" :onlyNumbers="true" :value="editAssociateData.bank_identifier_a" v-model="editAssociateData.bank_identifier_a" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Identificador do extrato (Para Transfêrencias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
             </div>
 
             <div class="form-add-associate-button">
