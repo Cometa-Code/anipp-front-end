@@ -30,6 +30,7 @@ export default {
                 'document-text',
                 'pencil-square',
                 'dollar',
+                'trash',
             ],
             associates: [],
             associatesFullInfos: [],
@@ -171,6 +172,11 @@ export default {
                 account_bank: '',
                 is_associate: 1,
             },
+            selectedAssociateToDelete: {
+                id: 0,
+                name: 'Fulano',
+            },
+            modalDeleteAssociate: false,
         }
     },
     props: {
@@ -464,6 +470,19 @@ export default {
                     }
                 }
             }
+
+            if (event.eventType == 'trash') {
+                for (let i = 0; i < this.associatesFullInfos.length; i++) {
+                    if (this.associatesFullInfos[i].document_cpf === event.data[2]) {
+                        this.selectedAssociateToDelete = {
+                            id: this.associatesFullInfos[i].id,
+                            name: this.associatesFullInfos[i].name
+                        }
+                    }
+                }
+
+                this.modalDeleteAssociate = true;
+            }
         },
         addAssociate() {
             if (this.loader) {
@@ -543,7 +562,24 @@ export default {
                 this.loader = false;
                 this.notify(err.response.data.message, 'error');
             });
-        }
+        },
+        deleteAssociate() {
+            this.loader = true;
+
+            this.$axios.delete(`user/associates/deactivate_user/${this.selectedAssociateToDelete.id}`)
+            .then(res => {
+                this.notify('Usuário deletado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro durante a exclusão do usuário e não foi possível deletar essa conta!', 'error');
+
+                this.loader = false;
+            });
+        },
     },
     components: { Head, Table, SimpleModal, Button, Input, Select, Loader }
 }
@@ -551,6 +587,16 @@ export default {
 
 <template>
     <Loader v-if="loader" />
+
+    <SimpleModal v-if="modalDeleteAssociate" @close="selectedAssociateToDelete = null; modalDeleteAssociate = false" title="Deseja excluir esse associado?" :hasOkButton="true" okButtonDescription="Confirmar" @clickOkButton="deleteAssociate">
+        <div class="delete-associate">
+            <h1>Atenção!</h1>
+
+            <p>Você tem certeza que deseja excluir permanentemente a conta do associado <b>{{ selectedAssociateToDelete.name }}</b>?</p>
+
+            <p>Saiba que essa ação é permanente e irreversível. Confirme apenas se tiver certeza dessa ação!</p>
+        </div>
+    </SimpleModal>
 
     <SimpleModal v-if="modalAssociateInfos" @close="modalAssociateInfos = false" title="Associado">
         <div class="associate-infos-simple-modal">
@@ -867,6 +913,22 @@ export default {
 .filter-associates {
     display: flex;
     margin-bottom: 30px;
+}
+
+.delete-associate {
+    text-align: center;
+    padding: 30px 0px;
+}
+
+.delete-associate h1 {
+    font-size: 24px;
+    margin-bottom: 40px;
+    color: #C0AB61;
+}
+
+.delete-associate p {
+    margin-bottom: 10px;
+    color: rgb(38, 38, 38);
 }
 
 @media screen and (max-width:800px) {
