@@ -36,6 +36,7 @@ export default {
             totalCharges: 0,
             totalFees: 0,
             financial_situation: '',
+            financial_situation_description: '',
             payments: [],
             paymentsFullInfos: [],
             filtersData: {
@@ -108,6 +109,7 @@ export default {
                 }
 
                 this.financial_situation = data.financial_situation;
+                this.financial_situation_description = data.financial_situation_description;
 
                 data.data.data.forEach((item) => {
                     let payments = [];
@@ -169,6 +171,7 @@ export default {
                 }
 
                 this.financial_situation = data.financial_situation;
+                this.financial_situation_description = data.financial_situation_description;
 
                 data.data.data.forEach((item) => {
                     let payments = [];
@@ -226,7 +229,7 @@ export default {
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Honorários: <span id="see-associates-total-number">R$ {{ parseFloat(totalFees).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Encargos: <span id="see-associates-total-number">R$ {{ parseFloat(totalCharges).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation != 'Indefinido' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
     </section>

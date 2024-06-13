@@ -105,7 +105,7 @@ export default {
             ],
             editAssociateStatusFinancialLifeSelect: [
                 {
-                    name: 'Indefinido',
+                    name: 'Pendência',
                     value: 'Indefinido',
                     selected: true,
                 },
@@ -126,6 +126,7 @@ export default {
                 email: undefined,
                 role: undefined,
                 financial_situation: undefined,
+                financial_situation_description: undefined,
                 password: 't3MpP4sswo0rd2981s',
                 document_cpf: undefined,
                 document_rg: undefined,
@@ -313,7 +314,7 @@ export default {
                     associateData.push(item.email);
                     associateData.push(item.document_cpf);
                     associateData.push(item.registration_number);
-                    associateData.push(item.financial_situation);
+                    associateData.push(item.financial_situation != 'Indefinido' ? item.financial_situation : `Pendência - ${item.financial_situation_description}`);
 
                     this.associates.push(associateData);
                     this.associatesFullInfos.push(item);
@@ -351,7 +352,7 @@ export default {
 
                 this.editAssociateStatusFinancialLifeSelect = [
                     {
-                        name: 'Indefinido',
+                        name: 'Pendência',
                         value: 'Indefinido',
                         selected: this.editAssociateData.financial_situation == 'Indefinido' ? true : false,
                     },
@@ -623,7 +624,7 @@ export default {
             <p>Número do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
-            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation }}</span></p>
+            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation != "Indefinido" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
             <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
         </div>
@@ -718,6 +719,8 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
+                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência financeira" placeholder="8.547.856-7" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
+                <div v-if="editAssociateData.financial_situation == 'Indefinido'" class="form-add-associate-line-space"></div>
                 <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
                 <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
