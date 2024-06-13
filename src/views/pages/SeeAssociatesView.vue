@@ -721,7 +721,7 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência financeira" placeholder="8.547.856-7" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
+                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência" placeholder="Dezembro de 2022" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
                 <div v-if="editAssociateData.financial_situation == 'Indefinido'" class="form-add-associate-line-space"></div>
                 <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
                 <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
