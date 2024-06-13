@@ -13,7 +13,7 @@ export default {
     data() {
         return {
             filterTerms: '',
-            loader: false,
+            loader: true,
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -294,6 +294,7 @@ export default {
             this.modalAddAssociate = true;
         },
         getNextPage() {
+            this.loader = true;
             this.loadingTable = true;
 
             this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}`)
@@ -321,6 +322,7 @@ export default {
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);

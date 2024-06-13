@@ -12,7 +12,7 @@ import 'vue3-toastify/dist/index.css';
 export default {
     data() {
         return {
-            loader: false,
+            loader: true,
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -106,6 +106,7 @@ export default {
         },
         getNextPaymentFilter() {
             this.loadingTable = true;
+            this.loader = true;
 
             this.actualPage = 0;
             this.totalItems = 0;
@@ -162,6 +163,7 @@ export default {
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);
@@ -175,6 +177,7 @@ export default {
             })
         },
         getNextPayment() {
+            this.loader = true;
             this.loadingTable = true;
 
             this.$axios.get(`/payments/${this.$route.params.id}?initial_date=${this.filtersData.initial_date}&finish_date=${this.filtersData.finish_date}&items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
@@ -228,6 +231,7 @@ export default {
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);
