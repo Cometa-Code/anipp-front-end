@@ -13,7 +13,7 @@ export default {
     data() {
         return {
             filterTerms: '',
-            loader: false,
+            loader: true,
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -30,6 +30,7 @@ export default {
                 'document-text',
                 'pencil-square',
                 'dollar',
+                'trash',
             ],
             associates: [],
             associatesFullInfos: [],
@@ -104,7 +105,7 @@ export default {
             ],
             editAssociateStatusFinancialLifeSelect: [
                 {
-                    name: 'Indefinido',
+                    name: 'Pendência',
                     value: 'Indefinido',
                     selected: true,
                 },
@@ -125,6 +126,7 @@ export default {
                 email: undefined,
                 role: undefined,
                 financial_situation: undefined,
+                financial_situation_description: undefined,
                 password: 't3MpP4sswo0rd2981s',
                 document_cpf: undefined,
                 document_rg: undefined,
@@ -145,6 +147,8 @@ export default {
                 agency_bank: undefined,
                 account_bank: undefined,
                 is_associate: undefined,
+                bank_identifier_a: undefined,
+                bank_identifier_b: undefined,
             },
             addAssociateData: {
                 name: '',
@@ -171,6 +175,11 @@ export default {
                 account_bank: '',
                 is_associate: 1,
             },
+            selectedAssociateToDelete: {
+                id: 0,
+                name: 'Fulano',
+            },
+            modalDeleteAssociate: false,
         }
     },
     props: {
@@ -244,6 +253,8 @@ export default {
                 agency_bank: undefined,
                 account_bank: undefined,
                 is_associate: undefined,
+                bank_identifier_a: undefined,
+                bank_identifier_b: undefined,
             };
 
             this.editAssociateRoleSelect = [];
@@ -283,6 +294,7 @@ export default {
             this.modalAddAssociate = true;
         },
         getNextPage() {
+            this.loader = true;
             this.loadingTable = true;
 
             this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}`)
@@ -303,13 +315,14 @@ export default {
                     associateData.push(item.email);
                     associateData.push(item.document_cpf);
                     associateData.push(item.registration_number);
-                    associateData.push(item.financial_situation);
+                    associateData.push(item.financial_situation != 'Indefinido' ? item.financial_situation : `Pendência - ${item.financial_situation_description}`);
 
                     this.associates.push(associateData);
                     this.associatesFullInfos.push(item);
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);
@@ -341,7 +354,7 @@ export default {
 
                 this.editAssociateStatusFinancialLifeSelect = [
                     {
-                        name: 'Indefinido',
+                        name: 'Pendência',
                         value: 'Indefinido',
                         selected: this.editAssociateData.financial_situation == 'Indefinido' ? true : false,
                     },
@@ -464,6 +477,19 @@ export default {
                     }
                 }
             }
+
+            if (event.eventType == 'trash') {
+                for (let i = 0; i < this.associatesFullInfos.length; i++) {
+                    if (this.associatesFullInfos[i].document_cpf === event.data[2]) {
+                        this.selectedAssociateToDelete = {
+                            id: this.associatesFullInfos[i].id,
+                            name: this.associatesFullInfos[i].name
+                        }
+                    }
+                }
+
+                this.modalDeleteAssociate = true;
+            }
         },
         addAssociate() {
             if (this.loader) {
@@ -543,7 +569,24 @@ export default {
                 this.loader = false;
                 this.notify(err.response.data.message, 'error');
             });
-        }
+        },
+        deleteAssociate() {
+            this.loader = true;
+
+            this.$axios.delete(`user/associates/deactivate_user/${this.selectedAssociateToDelete.id}`)
+            .then(res => {
+                this.notify('Usuário deletado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro durante a exclusão do usuário e não foi possível deletar essa conta!', 'error');
+
+                this.loader = false;
+            });
+        },
     },
     components: { Head, Table, SimpleModal, Button, Input, Select, Loader }
 }
@@ -551,6 +594,16 @@ export default {
 
 <template>
     <Loader v-if="loader" />
+
+    <SimpleModal v-if="modalDeleteAssociate" @close="selectedAssociateToDelete = null; modalDeleteAssociate = false" title="Deseja excluir esse associado?" :hasOkButton="true" okButtonDescription="Confirmar" @clickOkButton="deleteAssociate">
+        <div class="delete-associate">
+            <h1>Atenção!</h1>
+
+            <p>Você tem certeza que deseja excluir permanentemente a conta do associado <b>{{ selectedAssociateToDelete.name }}</b>?</p>
+
+            <p>Saiba que essa ação é permanente e irreversível. Confirme apenas se tiver certeza dessa ação!</p>
+        </div>
+    </SimpleModal>
 
     <SimpleModal v-if="modalAssociateInfos" @close="modalAssociateInfos = false" title="Associado">
         <div class="associate-infos-simple-modal">
@@ -570,10 +623,10 @@ export default {
             <p>CEP: <span>{{ selectedAssociate.address_zipcode }}</span></p>
             <p>Telefone: <span>{{ selectedAssociate.phone_ddd }} {{ selectedAssociate.phone_number }}</span></p>
             <p>Múltiplos pagamentos: <span :class="selectedAssociate.other_associations == 'Sim' ? 'orange' : ''">{{ selectedAssociate.other_associations }}</span></p>
-            <p>Código do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
+            <p>Número do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
-            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation }}</span></p>
+            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation != "Indefinido" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
             <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
         </div>
@@ -632,13 +685,13 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="DDD Telefônico" placeholder="11" :value="addAssociateData.phone_ddd" v-model="addAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="addAssociateData.phone_number" v-model="addAssociateData.phone_number" />
+                <Input type="text" label="Número do Whatsapp" placeholder="99999-9999" :value="addAssociateData.phone_number" v-model="addAssociateData.phone_number" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
+                <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="addAssociateData.code_bank" v-model="addAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" />
+                <Input type="text" label="Agência bancária" placeholder="0001" :agencyBankMask="true" :onlyNumbers="true" :value="addAssociateData.agency_bank" v-model="addAssociateData.agency_bank" :maxLength="5" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="addAssociateData.account_bank" v-model="addAssociateData.account_bank" />
                 <div class="form-add-associate-line-space"></div>
@@ -668,6 +721,8 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
+                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência financeira" placeholder="8.547.856-7" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
+                <div v-if="editAssociateData.financial_situation == 'Indefinido'" class="form-add-associate-line-space"></div>
                 <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
                 <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
@@ -704,15 +759,21 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="DDD Telefônico" placeholder="11" :value="editAssociateData.phone_ddd" v-model="editAssociateData.phone_ddd" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Número de telefone" placeholder="99999-9999" :value="editAssociateData.phone_number" v-model="editAssociateData.phone_number" />
+                <Input type="text" label="Número do Whatsapp" placeholder="99999-9999" :value="editAssociateData.phone_number" v-model="editAssociateData.phone_number" />
             </div>
 
             <div class="form-add-associate-line">
-                <Input type="text" label="Código do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
+                <Input type="text" label="Número do banco" placeholder="371" :onlyNumbers="true" :value="editAssociateData.code_bank" v-model="editAssociateData.code_bank" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Agência bancária" placeholder="0001" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" />
+                <Input type="text" label="Agência bancária" placeholder="0001" :agencyBankMask="true" :onlyNumbers="true" :value="editAssociateData.agency_bank" v-model="editAssociateData.agency_bank" :maxLength="5" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Conta bancária" placeholder="1578468-2" :value="editAssociateData.account_bank" v-model="editAssociateData.account_bank" />
+            </div>
+
+            <div class="form-add-associate-line">
+                <Input type="text" label="Identificador do extrato (Para PIX)" placeholder="000CPFDASTRANSFERENCIAS" :onlyNumbers="true" :value="editAssociateData.bank_identifier_a" v-model="editAssociateData.bank_identifier_a" />
+                <div class="form-add-associate-line-space"></div>
+                <Input type="text" label="Identificador do extrato (Para Transfêrencias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
             </div>
 
             <div class="form-add-associate-button">
@@ -867,6 +928,22 @@ export default {
 .filter-associates {
     display: flex;
     margin-bottom: 30px;
+}
+
+.delete-associate {
+    text-align: center;
+    padding: 30px 0px;
+}
+
+.delete-associate h1 {
+    font-size: 24px;
+    margin-bottom: 40px;
+    color: #C0AB61;
+}
+
+.delete-associate p {
+    margin-bottom: 10px;
+    color: rgb(38, 38, 38);
 }
 
 @media screen and (max-width:800px) {

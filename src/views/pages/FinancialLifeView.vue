@@ -12,7 +12,7 @@ import 'vue3-toastify/dist/index.css';
 export default {
     data() {
         return {
-            loader: false,
+            loader: true,
             loadingTable: true,
             hasNextPage: false,
             itemsPerPage: 10,
@@ -29,10 +29,14 @@ export default {
             ],
             totalSumPayments: 0,
             totalCreditValue: 0,
+            totalCreditValueMonthly: 0,
+            totalCreditValueSemiannual: 0,
+            totalCreditValueAnnual: 0,
             totalMembershipFee: 0,
             totalCharges: 0,
             totalFees: 0,
             financial_situation: '',
+            financial_situation_description: '',
             payments: [],
             paymentsFullInfos: [],
             filtersData: {
@@ -71,6 +75,7 @@ export default {
         },
         getNextPaymentFilter() {
             this.loadingTable = true;
+            this.loader = true;
 
             this.actualPage = 0;
             this.totalItems = 0;
@@ -91,8 +96,11 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                if (data.totalSumPayments > 0) {
+                if (data.totalSumPayments >= 0) {
                     this.totalCreditValue = data.totalCreditValue;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
 
                     this.totalMembershipFee = data.totalMembershipFee;
 
@@ -102,6 +110,7 @@ export default {
                 }
 
                 this.financial_situation = data.financial_situation;
+                this.financial_situation_description = data.financial_situation_description;
 
                 data.data.data.forEach((item) => {
                     let payments = [];
@@ -119,6 +128,7 @@ export default {
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);
@@ -132,6 +142,7 @@ export default {
             })
         },
         getNextPayment() {
+            this.loader = true;
             this.loadingTable = true;
 
             this.$axios.get(`/payments?initial_date=${this.filtersData.initial_date}&finish_date=${this.filtersData.finish_date}&items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}`)
@@ -149,8 +160,11 @@ export default {
                 
                 this.totalSumPayments = data.totalSumPayments;
 
-                if (data.totalSumPayments > 0) {
+                if (data.totalSumPayments >= 0) {
                     this.totalCreditValue = data.totalCreditValue;
+                    this.totalCreditValueMonthly = data.totalCreditValueMonthly;
+                    this.totalCreditValueSemiannual = data.totalCreditValueSemiannual;
+                    this.totalCreditValueAnnual = data.totalCreditValueAnnual;
     
                     this.totalMembershipFee = data.totalMembershipFee;
     
@@ -160,6 +174,7 @@ export default {
                 }
 
                 this.financial_situation = data.financial_situation;
+                this.financial_situation_description = data.financial_situation_description;
 
                 data.data.data.forEach((item) => {
                     let payments = [];
@@ -177,6 +192,7 @@ export default {
                 });
 
                 this.loadingTable = false;
+                this.loader = false;
             })
             .catch(err => {
                 console.log(err);
@@ -210,11 +226,14 @@ export default {
 
         <p v-if="!loadingTable" id="see-associates-total">Total de pagamentos: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Mensal: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueMonthly).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Semestral: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueSemiannual).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Contribuição Anual: <span id="see-associates-total-number">R$ {{ parseFloat(totalCreditValueAnnual).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Taxa de Adesão: <span id="see-associates-total-number">R$ {{ parseFloat(totalMembershipFee).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Honorários: <span id="see-associates-total-number">R$ {{ parseFloat(totalFees).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Encargos: <span id="see-associates-total-number">R$ {{ parseFloat(totalCharges).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation != 'Indefinido' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
     </section>
