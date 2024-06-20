@@ -42,7 +42,7 @@ export default {
             exitSum: 0,
             totalSum: 0,
             filtersData: {
-                initial_date: '2019-11-28',
+                initial_date: this.getFirstDateDay(),
                 finish_date: this.getCurrentDate(),
             },
             modalManualHistory: false,
@@ -98,6 +98,19 @@ export default {
             toast(text, {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
+        },
+        getFirstDateDay() {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            return formatDate(firstDayOfMonth);
         },
         getCurrentDate() {
             var data = new Date();
