@@ -626,7 +626,7 @@ export default {
             <p>Número do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
-            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation != "Indefinido" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
+            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation == "Adimplente" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
             <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
         </div>
@@ -721,8 +721,8 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência" placeholder="Dezembro de 2022" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
-                <div v-if="editAssociateData.financial_situation == 'Indefinido'" class="form-add-associate-line-space"></div>
+                <Input v-if="editAssociateData.financial_situation != 'Adimplente'" type="text" label="Descrição da pendência" placeholder="Dezembro de 2022" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
+                <div v-if="editAssociateData.financial_situation != 'Adimplente'" class="form-add-associate-line-space"></div>
                 <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
                 <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
