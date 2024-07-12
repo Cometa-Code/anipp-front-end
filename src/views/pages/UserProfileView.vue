@@ -46,7 +46,7 @@ export default {
                 'trash'
             ],
             dependentsTableCategories: [
-                'ID',
+                'N° Identificação',
                 'Nome',
                 'Telefone',
                 'Email',
