@@ -789,7 +789,7 @@ export default {
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <div v-if="!loadingTable" class="button-add-associate">
-            <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
+            <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="Adicionar associado" />
         </div>
 
         <div class="search-associate-div">

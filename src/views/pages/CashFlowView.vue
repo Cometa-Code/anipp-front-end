@@ -428,9 +428,9 @@ export default {
         <Head title="Fluxo de Caixa" />
 
         <section class="actions">
-            <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
+            <Button type="primary" placeholder="Carregar extrato" class="btn" @buttonPressed="loadStatement" />
             <div class="form-line-space"></div>
-            <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="loadStatement" />
+            <Button type="primary" placeholder="Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
             <div class="form-line-space"></div>
             <div v-if="selectedUploadStatementFile" class="search-button">
                 <Button type="secondary" class="btn" @buttonPressed="sendStatement">

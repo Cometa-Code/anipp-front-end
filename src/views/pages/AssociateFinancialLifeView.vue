@@ -376,7 +376,7 @@ export default {
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation == 'Adimplente' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
 
         <div v-if="!loadingTable" class="button-add-associate">
-            <Button type="primary" @buttonPressed="openAddPaymentModal" placeholder="+ Adicionar pagamento" />
+            <Button type="primary" @buttonPressed="openAddPaymentModal" placeholder="Adicionar pagamento" />
         </div>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />

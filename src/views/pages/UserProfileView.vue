@@ -346,7 +346,7 @@ export default {
             <h2>Gerencie os seus dependentes</h2>
             
             <div class="form-button add-dependent-button">
-                <Button type="primary" placeholder="+ Adicionar dependente" @buttonPressed="modalAddDependent = true" />
+                <Button type="primary" placeholder="Adicionar dependente" @buttonPressed="modalAddDependent = true" />
             </div>
 
             <Table v-if="!loader" :hasActions="true" :actions="dependentsTableActions" :hasNextPage="false" :headers="dependentsTableCategories" :contents="dependentsTableItems" @clickAction="dependentsTableClickAction" />
