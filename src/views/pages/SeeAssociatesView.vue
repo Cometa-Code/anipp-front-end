@@ -629,6 +629,9 @@ export default {
             <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation == "Adimplente" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
             <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
+            <p>Dependentes:</p>
+            <span v-if="selectedAssociate.dependents.length > 0" v-for="associate in selectedAssociate.dependents">{{ associate.name }} | {{ associate.degree_of_kinship }} | {{ associate.phone }} | {{ associate.email }}<br></span>
+            <span v-else>Não informados!<br></span>
         </div>
     </SimpleModal>
 
