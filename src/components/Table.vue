@@ -19,6 +19,9 @@ export default {
         hasNextPage: {
             type: Boolean
         },
+        hasIsCorrect: {
+            type: Boolean
+        }
     },
     methods: {
         emitClickEvent() {
@@ -39,8 +42,8 @@ export default {
                 <th v-if="hasActions" class="table-head-item">Ações</th>
             </tr>
 
-            <tr v-for="(item, index) in contents" :class="[(index % 2) === 0 ? 'table-content-item-gray' : '', 'table-content']">
-                <td v-for="itemData in item" class="table-content-item">{{ itemData }}</td>
+            <tr v-for="(item, index) in contents" :class="[(index % 2) === 0 ? 'table-content-item-gray' : '', 'table-content', hasIsCorrect ? (item[9] == 1 ? 'is-correct' : 'is-not-correct') : '']">
+                <td v-for="(itemData, i) in item" :class="[hasIsCorrect && i == 9 ? (item[9] == 1 ? 'is-correct' : 'is-not-correct') : '', 'table-content-item']">{{ hasIsCorrect && i == 9 ? (item[9] == 1 ? 'Identificado' : 'Não identificado') : itemData }}</td>
                 <td v-if="hasActions" class="table-content-item">
                     <div class="see-associates-action-icons">
                         <svg @click="emitActionEvent('document-text', item)" v-if="actions.includes('document-text')" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
@@ -96,6 +99,10 @@ export default {
 
 .table-content-item-gray {
     background-color: rgb(237, 237, 237);
+}
+
+.is-not-correct {
+    background-color: #f6e29b;
 }
 
 .table-head-item, .table-content-item {

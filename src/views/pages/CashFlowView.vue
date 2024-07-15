@@ -35,6 +35,7 @@ export default {
                 'Histórico',
                 'Detalhamento do Histórico',
                 'Descrição',
+                'Estado do Pagamento',
             ],
             cashFlowItems: [],
             cashFlowItemsFullInfos: [],
@@ -68,6 +69,18 @@ export default {
                 value: 0,
                 description: '',
             },
+            paymentStatusSelect: [
+                {
+                    name: 'Identificado',
+                    value: 1,
+                    selected: false,
+                },
+                {
+                    name: 'Não identificado',
+                    value: 0,
+                    selected: false,
+                },
+            ],
             typeSelectManualHistory: [
                 {
                     name: 'Entrada',
@@ -162,8 +175,10 @@ export default {
                     cashFlows.push(item.history);
                     cashFlows.push(item.history_detail);
                     cashFlows.push(item.description);
+                    cashFlows.push(item.is_correct);
 
                     this.cashFlowItems.push(cashFlows);
+                    this.cashFlowItemsFullInfos.push(item);
                 });
 
                 this.loader = false;
@@ -207,6 +222,7 @@ export default {
                     cashFlows.push(item.history);
                     cashFlows.push(item.history_detail);
                     cashFlows.push(item.description);
+                    cashFlows.push(item.is_correct);
 
                     this.cashFlowItems.push(cashFlows);
                     this.cashFlowItemsFullInfos.push(item);
@@ -282,6 +298,8 @@ export default {
 
                 this.jsonData = jsonData;
 
+                console.log(this.jsonData);
+
                 this.sendDataToApi();
             };
             reader.readAsArrayBuffer(file);
@@ -297,7 +315,6 @@ export default {
                 await this.delay(5000);
             }
 
-            this.notify('Verifique o seu e-mail para resolver possíveis problemas!', 'warning');
             this.notify('Extrato lido com sucesso!', 'success');
 
             setTimeout(() => {
@@ -326,7 +343,21 @@ export default {
                         this.editManualHistoryId = this.cashFlowItemsFullInfos[i].id;
                     }
                 }
+                
+                this.paymentStatusSelect = [
+                    {
+                        name: 'Identificado',
+                        value: 1,
+                        selected: this.editManualHistoryData.is_correct == 1 ? true : false,
+                    },
+                    {
+                        name: 'Não identificado',
+                        value: 0,
+                        selected: this.editManualHistoryData.is_correct == 0 ? true : false,
+                    },
+                ];
             }
+
 
             this.modalManualHistoryType = 'edit';
             this.modalManualHistory = true;
@@ -378,6 +409,8 @@ export default {
 
             <div class="form-add-associate-line">
                 <Input type="text" label="Valor" placeholder="200.00" :value="editManualHistoryData.value" v-model="editManualHistoryData.value" :currencyMask="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Estado do Pagamento" :options="paymentStatusSelect" :value="editManualHistoryData.is_correct" v-model="editManualHistoryData.is_correct" />
             </div>
 
             <div class="form-add-associate-line">
@@ -468,7 +501,7 @@ export default {
             </div>
         </section>
 
-        <Table v-if="!loader" :hasActions="true" :actions="cashFlowTableActions" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" @clickAction="cashFlowTableClickAction" />
+        <Table v-if="!loader" :hasActions="true" :actions="cashFlowTableActions" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" @clickAction="cashFlowTableClickAction" :hasIsCorrect="true" />
     </section>
 </template>
 
