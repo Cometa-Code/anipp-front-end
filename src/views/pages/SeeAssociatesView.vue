@@ -89,6 +89,11 @@ export default {
                     value: 'Divorciado',
                     selected: false,
                 },
+                {
+                    name: 'Falecido',
+                    value: 'Falecido',
+                    selected: false,
+                },
             ],
             editAssociateMaritalSelect: [],
             addAssociateOtherAssociationsSelect: [
@@ -446,6 +451,11 @@ export default {
                         name: 'Divorciado',
                         value: 'Divorciado',
                         selected: this.editAssociateData.marital_status == 'Divorciado' ? true : false,
+                    },
+                    {
+                        name: 'Falecido',
+                        value: 'Falecido',
+                        selected: this.editAssociateData.marital_status == 'Falecido' ? true : false,
                     },
                 ];
 

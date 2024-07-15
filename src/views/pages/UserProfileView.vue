@@ -112,6 +112,11 @@ export default {
                 value: 'Divorciado',
                 selected: this.userData.marital_status == 'Divorciado' ? true : false,
             },
+            {
+                name: 'Falecido',
+                value: 'Falecido',
+                selected: this.userData.marital_status == 'Falecido' ? true : false,
+            },
         ];
 
         this.editUserData.marital_status = this.userData.marital_status;
