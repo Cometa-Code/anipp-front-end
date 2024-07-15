@@ -41,6 +41,7 @@ export default {
             addAssociateRoleSelect: [],
             editAssociateRoleSelect: [],
             editAssociateNationalitySelect: [],
+            financialLifeStatusFilter: 'todos',
             addAssociateNationalitySelect: [
                 {
                     name: 'Brasileiro',
@@ -302,7 +303,7 @@ export default {
             this.loader = true;
             this.loadingTable = true;
 
-            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}`)
+            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}&financial_life_filter=${this.financialLifeStatusFilter}`)
             .then(res => {
                 const data = res.data.data;
                 console.log(data);
@@ -802,6 +803,13 @@ export default {
             <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="Adicionar associado" />
         </div>
 
+        <div class="filter-financial-life">
+            <div @click="financialLifeStatusFilter = 'todos'" :class="[financialLifeStatusFilter == 'todos' ? 'filter-active' : '', 'filter']">Todos</div>
+            <div @click="financialLifeStatusFilter = 'adimplente'" :class="[financialLifeStatusFilter == 'adimplente' ? 'filter-active' : '','filter']">Adimplente</div>
+            <div @click="financialLifeStatusFilter = 'inadimplente'" :class="[financialLifeStatusFilter == 'inadimplente' ? 'filter-active' : '','filter']">Inadimplente</div>
+            <div @click="financialLifeStatusFilter = 'indefinido'" :class="[financialLifeStatusFilter == 'indefinido' ? 'filter-active' : '','filter']">Pendência</div>
+        </div>
+
         <div class="search-associate-div">
             <Input type="text" label="Busque por termos" placeholder="Nome, e-mail ou documento" :value="filterTerms" v-model="filterTerms" />
 
@@ -957,6 +965,23 @@ export default {
 .delete-associate p {
     margin-bottom: 10px;
     color: rgb(38, 38, 38);
+}
+
+.filter-financial-life {
+    margin: 20px 0px;
+    display: flex;
+    align-items: center;
+}
+
+.filter {
+    padding: 8px 14px;
+    border: 1px solid #C0AB61;
+    cursor: pointer
+}
+
+.filter-active {
+    background-color: #C0AB61;
+    color: #fff;
 }
 
 @media screen and (max-width:800px) {
