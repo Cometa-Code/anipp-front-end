@@ -342,6 +342,10 @@ export default {
                 <Input type="text" label="Número do Whatsapp" placeholder="999999999" :value="editUserData.phone_number" v-model="editUserData.phone_number" :only-numbers="true" />
             </div>
 
+            <div class="accept-terms">
+                <p>Declaro conhecer e concordar com os termos constantes no Estatuto Social da ANIPP, aprovado na Reunião de Constituição, realizada em 28 de outubro de 2019, devidamente registrado junto ao Cartório do 2º Ofício de Registro Civil e Casamentos, Títulos e Documentos e Pessoas Jurídicas de Brasília – Distrito Federal, em sua totalidade e, em especial, às disposições que seguem: 1. A ANIPP é uma sociedade civil, sem fins lucrativos, com prazo de duração indeterminado, de caráter representativo, com sede e foro em Brasília-DF; 2. São finalidades da ANIPP, a defesa de seus associados, participantes ou beneficiários do POSTALIS em âmbito nacional, em juízo ou fora dele; assim como a preservação do patrimônio do POSTALIS ou outra instituição pública ou privada que venha a lhe suceder; 3. São direitos dos associados, os de participar das Assembleias Gerais com direito a propor, debater, votar e ser votado, desde que em dia com o pagamento de sua contribuição social; 4. São deveres dos associados, os de cumprir as disposições do Estatuto Social e de não praticar atos que desabonem a própria conduta ou o bom nome da ANIPP; 5. O patrimônio da ANIPP é distinto do de seus associados e é constituído, principalmente, por contribuições mensais de seus associados, bem como contribuições extraordinárias, se houver.</p>
+            </div>
+
             <div class="form-button">
                 <Button type="primary" placeholder="Salvar dados" @buttonPressed="updateUserData" />
             </div>
@@ -481,6 +485,12 @@ export default {
 
 .form-add-associate-button {
     width: 100%;
+}
+
+.accept-terms {
+    margin-bottom: 30px;
+    font-size: 16px;
+    color: rgb(37, 37, 37);
 }
 
 @media screen and (max-width:800px) {
