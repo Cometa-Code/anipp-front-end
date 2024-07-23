@@ -787,7 +787,7 @@ export default {
             <div class="form-add-associate-line">
                 <Input type="text" label="Identificador do extrato (Para PIX)" placeholder="000CPFDASTRANSFERENCIAS" :onlyNumbers="true" :value="editAssociateData.bank_identifier_a" v-model="editAssociateData.bank_identifier_a" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Identificador do extrato (Para Transfêrencias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
+                <Input type="text" label="Identificador do extrato (Para Transferêcias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
             </div>
 
             <div class="form-add-associate-button">
