@@ -418,15 +418,21 @@ export default {
                             selected: this.editAssociateData.role == 'admin' && this.editAssociateData.is_associate == 0 ? true : false
                         },
                     );
+                } else {
+                    this.editAssociateRoleSelect.push(
+                        {
+                            name: 'Associado e Administrador',
+                            value: 'adminandassociate',
+                            selected: this.editAssociateData.role == 'admin' && this.editAssociateData.is_associate == 1 ? true : false
+                        },
+                        {
+                            name: 'Associado',
+                            value: 'associate',
+                            selected: this.editAssociateData.role == 'associate' ? true : false
+                        }
+                    );
                 }
                 
-                this.editAssociateRoleSelect.push(
-                    {
-                        name: 'Associado',
-                        value: 'associate',
-                        selected: this.editAssociateData.role == 'associate' ? true : false
-                    }
-                );
 
                 this.editAssociateMaritalSelect = [
                     {
