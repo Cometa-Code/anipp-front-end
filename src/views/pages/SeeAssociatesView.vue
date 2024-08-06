@@ -216,15 +216,21 @@ export default {
                     selected: false
                 },
             );
+        } else {
+            this.addAssociateRoleSelect.push(
+                {
+                    name: 'Associado e Administrador',
+                    value: 'adminandassociate',
+                    selected: false
+                },
+                {
+                    name: 'Associado',
+                    value: 'associate',
+                    selected: true
+                }
+            );
         }
 
-        this.addAssociateRoleSelect.push(
-            {
-                name: 'Associado',
-                value: 'associate',
-                selected: true
-            }
-        );
 
         this.getNextPage();
     },
@@ -658,8 +664,8 @@ export default {
                 <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="addAssociateData.name" v-model="addAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="addAssociateData.email" v-model="addAssociateData.email" />
-                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
-                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
+                <div v-if="userData.role != 'associate'" class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role != 'associate'" label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
             </div>
 
             <div class="form-add-associate-line">
@@ -737,8 +743,8 @@ export default {
             <div class="form-add-associate-line">
                 <Input v-if="editAssociateData.financial_situation != 'Adimplente'" type="text" label="Descrição da pendência" placeholder="Dezembro de 2022" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
                 <div v-if="editAssociateData.financial_situation != 'Adimplente'" class="form-add-associate-line-space"></div>
-                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
-                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role != 'associate'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
+                <div v-if="userData.role != 'associate'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
                 <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
