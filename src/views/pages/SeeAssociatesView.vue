@@ -679,7 +679,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
+                <Select label="Paga para outro associado" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-line">
@@ -753,7 +753,7 @@ export default {
                 <div v-if="userData.role != 'associate'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
+                <Select label="Paga para outro associado" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-line">
