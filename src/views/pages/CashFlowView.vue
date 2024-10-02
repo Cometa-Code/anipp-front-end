@@ -104,6 +104,16 @@ export default {
             this.$router.push('/inicio');
         }
 
+        const { initial_date, finish_date } = this.$route.query;
+
+        if (initial_date) {
+            this.filtersData.initial_date = initial_date; // Define o valor se estiver presente
+        }
+
+        if (finish_date) {
+            this.filtersData.finish_date = finish_date; // Define o valor se estiver presente
+        }
+
         this.getNextCashFlow();
     },
     methods: {
@@ -242,6 +252,15 @@ export default {
             .then(res => {
                 this.notify('Histórico adicionado com sucesso!', 'success');
 
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
+
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -368,6 +387,15 @@ export default {
             this.$axios.put(`/cash_flow/${this.editManualHistoryId}`, this.editManualHistoryData)
             .then(res =>  {
                 this.notify('Dados atualizados com sucesso!', 'success');
+
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
 
                 setTimeout(() => {
                     window.location.reload();
