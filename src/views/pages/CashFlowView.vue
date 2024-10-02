@@ -168,7 +168,7 @@ export default {
 
                     cashFlows.push(item.id);
                     cashFlows.push(item.type);
-                    cashFlows.push(item.date);
+                    cashFlows.push(`${item.date[8]}${item.date[9]}/${item.date[5]}${item.date[6]}/${item.date[0]}${item.date[1]}${item.date[2]}${item.date[3]}`);
                     cashFlows.push(`R$ ${item.value.replace('.', ',')}`);
                     cashFlows.push(item.document_number);
                     cashFlows.push(item.history_code);
