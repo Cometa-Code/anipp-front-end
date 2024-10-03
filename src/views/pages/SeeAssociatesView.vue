@@ -820,6 +820,7 @@ export default {
             <div @click="financialLifeStatusFilter = 'adimplente'" :class="[financialLifeStatusFilter == 'adimplente' ? 'filter-active' : '','filter']">Adimplente</div>
             <div @click="financialLifeStatusFilter = 'inadimplente'" :class="[financialLifeStatusFilter == 'inadimplente' ? 'filter-active' : '','filter']">Inadimplente</div>
             <div @click="financialLifeStatusFilter = 'indefinido'" :class="[financialLifeStatusFilter == 'indefinido' ? 'filter-active' : '','filter']">Pendência</div>
+            <div @click="financialLifeStatusFilter = 'falecido'" :class="[financialLifeStatusFilter == 'falecido' ? 'filter-active' : '','filter']">Falecido</div>
         </div>
 
         <div class="search-associate-div">
