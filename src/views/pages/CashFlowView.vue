@@ -97,6 +97,7 @@ export default {
             cashFlowTableActions: [
                 'pencil-square'
             ],
+            uploadType: undefined,
         }
     },
     created() {
@@ -303,25 +304,74 @@ export default {
             console.log('comecou')
             var file = this.selectedUploadStatementFile;
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+            if (this.uploadType == 'billet') {
+                console.log("boleto");
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
 
-                // Considerando que os dados estão na primeira planilha
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
+                    // Considerando que os dados estão na primeira planilha
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
 
-                // Converte a planilha em JSON
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    // Converte a planilha em JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-                this.jsonData = jsonData;
+                    this.jsonData = jsonData;
 
-                console.log(this.jsonData);
+                    console.log(this.jsonData);
 
-                this.sendDataToApi();
-            };
-            reader.readAsArrayBuffer(file);
+                    this.sendBilletDataToApi();
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            if (this.uploadType == 'extract') {
+                console.log("extrato")
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Considerando que os dados estão na primeira planilha
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // Converte a planilha em JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    this.jsonData = jsonData;
+
+                    console.log(this.jsonData);
+
+                    this.sendDataToApi();
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        },
+        async sendBilletDataToApi() {
+            this.notify('Estamos fazendo a leitura do seu extrato, aguarde finalizar!', 'info');
+            this.loader = true;
+            console.log('foi chamado - boleto')
+
+            this.$axios.post('cash_flow/read_extract_billet', this.jsonData)
+            .then(res => {
+                this.notify('Extrato lido com sucesso!', 'success');
+
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
         },
         async sendDataToApi() {
             this.notify('Estamos fazendo a leitura do seu extrato, aguarde finalizar!', 'info');
@@ -333,6 +383,15 @@ export default {
                 await this.sendChunk(chunk);
                 await this.delay(5000);
             }
+
+            this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
 
             this.notify('Extrato lido com sucesso!', 'success');
 
@@ -489,7 +548,9 @@ export default {
         <Head title="Fluxo de Caixa" />
 
         <section class="actions">
-            <Button type="primary" placeholder="Carregar extrato" class="btn" @buttonPressed="loadStatement" />
+            <Button type="primary" placeholder="Carregar extrato" class="btn" @buttonPressed="loadStatement" @click="uploadType = 'extract'" />
+            <div class="form-line-space"></div>
+            <Button type="primary" placeholder="Carregar extrato boleto" class="btn" @buttonPressed="loadStatement" @click="uploadType = 'billet'" />
             <div class="form-line-space"></div>
             <Button type="primary" placeholder="Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
             <div class="form-line-space"></div>
@@ -643,7 +704,7 @@ export default {
     align-items: center;
     justify-content: flex-start;
     margin-bottom: 20px;
-    max-width: 600px;
+    max-width: 1000px;
 }
 
 #upload-statement {
