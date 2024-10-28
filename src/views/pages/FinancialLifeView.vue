@@ -270,7 +270,7 @@ export default {
         <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation == 'Adimplente' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
 
         <section class="button">
-            <Button type="primary" placeholder="Baixar histórico em CSV" @buttonPressed="getHistoryCSV" />
+            <Button type="primary" placeholder="Baixar planilha de pagamentos" @buttonPressed="getHistoryCSV" />
         </section>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
