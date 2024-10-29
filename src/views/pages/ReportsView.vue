@@ -20,7 +20,7 @@ export default {
             reportsListCategories: [
                 {
                     name: "Ação ANIPP - Documentos",
-                    isActive: true,
+                    isActive: false,
                     data: [],
                 },
                 {
@@ -72,10 +72,6 @@ export default {
         }
     },
     created() {
-        if (this.userData.role == 'associate') {
-            this.$router.push('/inicio');
-        }
-
         this.loader = true;
         this.$axios.get('/reports')
         .then(res => {

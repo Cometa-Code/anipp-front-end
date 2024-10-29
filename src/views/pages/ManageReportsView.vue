@@ -21,7 +21,7 @@ export default {
             reportsListCategories: [
                 {
                     name: "Ação ANIPP - Documentos",
-                    isActive: true,
+                    isActive: false,
                     data: [],
                 },
                 {
@@ -70,6 +70,13 @@ export default {
             modalCreateReport: false,
             modalConfirmDelete: false,
             selectedReportDelete: undefined,
+            editReportView: false,
+            editReportId: false,
+            reportEditData: {
+                title: '',
+                file_name: null,
+                file_url: null,
+            }
         }
     },
     created() {
@@ -127,6 +134,10 @@ export default {
             toast(text, {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
+        },
+        closeUpdateReport() {
+            this.selectedUploadFile = null;
+            this.editReportView = false;
         },
         deleteReport() {
             this.loader = true;
@@ -186,9 +197,61 @@ export default {
                 return this.loader = false;
             })
         },
+        updateReport() {
+            this.loader = true;
+            
+            if (this.selectedUploadFile) {
+                console.log(this.selectedUploadFile);
+    
+                axios.post('https://files.associados.anipp.org.br/create.php', {
+                    file: this.selectedUploadFile
+                }, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                })
+                .then(res => {
+                    this.reportEditData.file_name = res.data;
+                    this.reportEditData.file_url = `https://files.associados.anipp.org.br/uploads/${res.data}`;
+    
+                    this.$axios.put(`/reports/${this.editReportId}`, this.reportEditData)
+                    .then(res => {
+                        this.notify('Informe adicionado com sucesso!', 'success');
+                        
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        this.notify('Ocorreu um erro durante a atualização do informativo e não foi possível finalizar!', 'error');
+                        return this.loader = false;
+                    });
+                })
+                .catch(err => {
+                    this.notify('Ocorreu um erro durante a atualização do informativo e não foi possível finalizar!', 'error');
+                    return this.loader = false;
+                })
+            } else {
+                this.$axios.put(`/reports/${this.editReportId}`, this.reportEditData)
+                .then(res => {
+                    this.notify('Informe adicionado com sucesso!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                })
+                .catch(err => {
+                    this.notify('Ocorreu um erro durante a atualização do informativo e não foi possível finalizar!', 'error');
+                    return this.loader = false;
+                });
+            }
+        },
         uploadFile(event) {
             this.selectedUploadFile = event.target.files[0];
-        }
+        },
+        uploadFileEdit(event) {
+            this.selectedUploadFile = event.target.files[0];
+        },
     },
     components: { Head, Input, Select, Button, Loader, SimpleModal }
 }
@@ -234,6 +297,28 @@ export default {
         </div>
     </section>
 
+    <section v-if="editReportView" class="bg-modal-add-report">
+        <div class="modal-add-report">
+            <header>
+                <h2>Editar Informativo</h2>
+            </header>
+
+            <article>
+                <Input type="text" label="Título do informe" placeholder="Informe financeiro 01/2024" :value="reportEditData.title" v-model="reportEditData.title" />
+
+                <div class="upload-pdf-div">
+                    <label for="upload-pdf">Selecione um novo arquivo PDF</label>
+                    <input type="file" name="upload-pdf" id="upload-pdf" accept="application/pdf" @change="uploadFileEdit">
+                </div>
+            </article>
+
+            <footer>
+                <button class="button-close" @click="closeUpdateReport">Fechar</button>
+                <button class="button-create" @click="updateReport">Confirmar</button>
+            </footer>
+        </div>
+    </section>
+
     <section v-if="!loader" class="manage-reports-list">
         <div v-for="(type, index) in reportsListCategories">
             <div @click="!reportsListCategories[index].isActive ? reportsListCategories[index].isActive = true : reportsListCategories[index].isActive = false" class="manage-reports-list-type">
@@ -248,11 +333,18 @@ export default {
                 <div v-for="report in type.data" class="manage-reports-list-content">
                     <p>{{ report.title ? report.title : report.file_name }}</p>
 
-                    <div @click="selectedReportDelete = report.id; modalConfirmDelete = true" class="manage-reports-list-delete-content">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                        </svg>
-                    </div>
+                    <section class="actions">
+                        <div @click="editReportId = report.id; reportEditData.title = report.title; editReportView = true" class="manage-reports-list-edit-content">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>
+                        </div>
+                        <div @click="selectedReportDelete = report.id; modalConfirmDelete = true" class="manage-reports-list-delete-content">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </div>
+                    </section>
                 </div>
 
                 <!-- <div class="manage-reports-list-load-more">
@@ -370,6 +462,28 @@ export default {
     transition: .2s;
 }
 
+.manage-reports-list-edit-content {
+    background-color: transparent;
+    border: 1px solid #1e9ae2;
+    padding: 5px;
+    border-radius: 5px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    cursor: pointer;
+    color: #1e9ae2;
+    transition: .2s;
+}
+
+.manage-reports-list-edit-content:hover {
+    background-color: #1e9ae2;
+    color: white;
+    transition: .2s;
+}
+
 .manage-reports-list-delete-content .icon {
     width: 14px;
 
@@ -383,6 +497,12 @@ export default {
     background-color: #C0AB61;
     color: white;
     transition: .2s;
+}
+
+.manage-reports-list .actions {
+    display: flex;
+    align-items: center;
+    gap: 1px;
 }
 
 .bg-modal-add-report {

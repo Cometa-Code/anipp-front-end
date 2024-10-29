@@ -35,6 +35,7 @@ export default {
                 'Histórico',
                 'Detalhamento do Histórico',
                 'Descrição',
+                'Estado do Pagamento',
             ],
             cashFlowItems: [],
             cashFlowItemsFullInfos: [],
@@ -42,7 +43,7 @@ export default {
             exitSum: 0,
             totalSum: 0,
             filtersData: {
-                initial_date: '2019-11-28',
+                initial_date: this.getFirstDateDay(),
                 finish_date: this.getCurrentDate(),
             },
             modalManualHistory: false,
@@ -68,6 +69,18 @@ export default {
                 value: 0,
                 description: '',
             },
+            paymentStatusSelect: [
+                {
+                    name: 'Identificado',
+                    value: 1,
+                    selected: false,
+                },
+                {
+                    name: 'Não identificado',
+                    value: 0,
+                    selected: false,
+                },
+            ],
             typeSelectManualHistory: [
                 {
                     name: 'Entrada',
@@ -84,11 +97,22 @@ export default {
             cashFlowTableActions: [
                 'pencil-square'
             ],
+            uploadType: undefined,
         }
     },
     created() {
         if (this.userData.role == 'associate') {
             this.$router.push('/inicio');
+        }
+
+        const { initial_date, finish_date } = this.$route.query;
+
+        if (initial_date) {
+            this.filtersData.initial_date = initial_date; // Define o valor se estiver presente
+        }
+
+        if (finish_date) {
+            this.filtersData.finish_date = finish_date; // Define o valor se estiver presente
         }
 
         this.getNextCashFlow();
@@ -98,6 +122,19 @@ export default {
             toast(text, {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
+        },
+        getFirstDateDay() {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            return formatDate(firstDayOfMonth);
         },
         getCurrentDate() {
             var data = new Date();
@@ -142,15 +179,17 @@ export default {
 
                     cashFlows.push(item.id);
                     cashFlows.push(item.type);
-                    cashFlows.push(item.date);
+                    cashFlows.push(`${item.date[8]}${item.date[9]}/${item.date[5]}${item.date[6]}/${item.date[0]}${item.date[1]}${item.date[2]}${item.date[3]}`);
                     cashFlows.push(`R$ ${item.value.replace('.', ',')}`);
                     cashFlows.push(item.document_number);
                     cashFlows.push(item.history_code);
                     cashFlows.push(item.history);
                     cashFlows.push(item.history_detail);
                     cashFlows.push(item.description);
+                    cashFlows.push(item.is_correct);
 
                     this.cashFlowItems.push(cashFlows);
+                    this.cashFlowItemsFullInfos.push(item);
                 });
 
                 this.loader = false;
@@ -194,6 +233,7 @@ export default {
                     cashFlows.push(item.history);
                     cashFlows.push(item.history_detail);
                     cashFlows.push(item.description);
+                    cashFlows.push(item.is_correct);
 
                     this.cashFlowItems.push(cashFlows);
                     this.cashFlowItemsFullInfos.push(item);
@@ -212,6 +252,15 @@ export default {
             this.$axios.post('/cash_flow', this.addManualHistoryData)
             .then(res => {
                 this.notify('Histórico adicionado com sucesso!', 'success');
+
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
 
                 setTimeout(() => {
                     window.location.reload();
@@ -255,23 +304,74 @@ export default {
             console.log('comecou')
             var file = this.selectedUploadStatementFile;
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+            if (this.uploadType == 'billet') {
+                console.log("boleto");
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
 
-                // Considerando que os dados estão na primeira planilha
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
+                    // Considerando que os dados estão na primeira planilha
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
 
-                // Converte a planilha em JSON
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    // Converte a planilha em JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-                this.jsonData = jsonData;
+                    this.jsonData = jsonData;
 
-                this.sendDataToApi();
-            };
-            reader.readAsArrayBuffer(file);
+                    console.log(this.jsonData);
+
+                    this.sendBilletDataToApi();
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            if (this.uploadType == 'extract') {
+                console.log("extrato")
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Considerando que os dados estão na primeira planilha
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // Converte a planilha em JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    this.jsonData = jsonData;
+
+                    console.log(this.jsonData);
+
+                    this.sendDataToApi();
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        },
+        async sendBilletDataToApi() {
+            this.notify('Estamos fazendo a leitura do seu extrato, aguarde finalizar!', 'info');
+            this.loader = true;
+            console.log('foi chamado - boleto')
+
+            this.$axios.post('cash_flow/read_extract_billet', this.jsonData)
+            .then(res => {
+                this.notify('Extrato lido com sucesso!', 'success');
+
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
         },
         async sendDataToApi() {
             this.notify('Estamos fazendo a leitura do seu extrato, aguarde finalizar!', 'info');
@@ -284,7 +384,15 @@ export default {
                 await this.delay(5000);
             }
 
-            this.notify('Verifique o seu e-mail para resolver possíveis problemas!', 'warning');
+            this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
+
             this.notify('Extrato lido com sucesso!', 'success');
 
             setTimeout(() => {
@@ -313,7 +421,21 @@ export default {
                         this.editManualHistoryId = this.cashFlowItemsFullInfos[i].id;
                     }
                 }
+                
+                this.paymentStatusSelect = [
+                    {
+                        name: 'Identificado',
+                        value: 1,
+                        selected: this.editManualHistoryData.is_correct == 1 ? true : false,
+                    },
+                    {
+                        name: 'Não identificado',
+                        value: 0,
+                        selected: this.editManualHistoryData.is_correct == 0 ? true : false,
+                    },
+                ];
             }
+
 
             this.modalManualHistoryType = 'edit';
             this.modalManualHistory = true;
@@ -324,6 +446,15 @@ export default {
             this.$axios.put(`/cash_flow/${this.editManualHistoryId}`, this.editManualHistoryData)
             .then(res =>  {
                 this.notify('Dados atualizados com sucesso!', 'success');
+
+                this.$router.push({
+                    path: this.$route.path,
+                    query: {
+                        ...this.$route.query,
+                        initial_date: this.filtersData.initial_date,
+                        finish_date: this.filtersData.finish_date,
+                    }
+                });
 
                 setTimeout(() => {
                     window.location.reload();
@@ -365,6 +496,8 @@ export default {
 
             <div class="form-add-associate-line">
                 <Input type="text" label="Valor" placeholder="200.00" :value="editManualHistoryData.value" v-model="editManualHistoryData.value" :currencyMask="true" />
+                <div class="form-add-associate-line-space"></div>
+                <Select label="Estado do Pagamento" :options="paymentStatusSelect" :value="editManualHistoryData.is_correct" v-model="editManualHistoryData.is_correct" />
             </div>
 
             <div class="form-add-associate-line">
@@ -415,9 +548,11 @@ export default {
         <Head title="Fluxo de Caixa" />
 
         <section class="actions">
-            <Button type="primary" placeholder="+ Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
+            <Button type="primary" placeholder="Carregar extrato" class="btn" @buttonPressed="loadStatement" @click="uploadType = 'extract'" />
             <div class="form-line-space"></div>
-            <Button type="primary" placeholder="+ Carregar extrato" class="btn" @buttonPressed="loadStatement" />
+            <Button type="primary" placeholder="Carregar extrato boleto" class="btn" @buttonPressed="loadStatement" @click="uploadType = 'billet'" />
+            <div class="form-line-space"></div>
+            <Button type="primary" placeholder="Histórico manual" class="btn" @buttonPressed="modalManualHistoryType = 'add'; modalManualHistory = true" />
             <div class="form-line-space"></div>
             <div v-if="selectedUploadStatementFile" class="search-button">
                 <Button type="secondary" class="btn" @buttonPressed="sendStatement">
@@ -455,7 +590,7 @@ export default {
             </div>
         </section>
 
-        <Table v-if="!loader" :hasActions="true" :actions="cashFlowTableActions" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" @clickAction="cashFlowTableClickAction" />
+        <Table v-if="!loader" :hasActions="true" :actions="cashFlowTableActions" :hasNextPage="hasNextPage" :headers="cashFlowTableCategories" :contents="cashFlowItems" @loadMore="getNextCashFlow" @clickAction="cashFlowTableClickAction" :hasIsCorrect="true" />
     </section>
 </template>
 
@@ -569,7 +704,7 @@ export default {
     align-items: center;
     justify-content: flex-start;
     margin-bottom: 20px;
-    max-width: 600px;
+    max-width: 1000px;
 }
 
 #upload-statement {

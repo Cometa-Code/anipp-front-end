@@ -8,6 +8,8 @@ import Loader from '@/components/Loader';
 import SimpleModal from '@/components/SimpleModal';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 export default {
     data() {
@@ -141,6 +143,38 @@ export default {
                 this.notify('Erro ao buscar informações!', 'error');
             })
         },
+        getHistoryCSV() {
+            this.$axios.get('/all_payments')
+            .then(res => {
+                // Extrai os dados recebidos
+                const payments = res.data.data;
+
+                // Mapeia e traduz os campos para as colunas do XLSX
+                const formattedData = payments.map(payment => ({
+                    "Método de pagamento": payment.payment_method,
+                    "Tipo de pagamento": payment.payment_type,
+                    "Data de pagamento": payment.payment_date,
+                    "Valor de crédito": payment.credit_value,
+                    "Taxa de associação": payment.membership_fee,
+                    "Encargos": payment.charges,
+                    "Taxas": payment.fees,
+                    "Comentários": payment.comments,
+                }));
+
+                // Cria a planilha e adiciona os dados
+                const worksheet = XLSX.utils.json_to_sheet(formattedData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Pagamentos");
+
+                // Converte o workbook para um blob e faz o download
+                const xlsxArrayBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([xlsxArrayBuffer], { type: "application/octet-stream" });
+                saveAs(blob, 'Pagamentos.xlsx');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        },
         getNextPayment() {
             this.loader = true;
             this.loadingTable = true;
@@ -233,7 +267,11 @@ export default {
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Honorários: <span id="see-associates-total-number">R$ {{ parseFloat(totalFees).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Encargos: <span id="see-associates-total-number">R$ {{ parseFloat(totalCharges).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ totalSumPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation != 'Indefinido' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation == 'Adimplente' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
+
+        <section class="button">
+            <Button type="primary" placeholder="Baixar planilha de pagamentos" @buttonPressed="getHistoryCSV" />
+        </section>
 
         <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
     </section>
@@ -349,6 +387,12 @@ export default {
 
 .filters .btn {
     margin-top: 25px;
+}
+
+.button {
+    width: 300px;
+    margin-top: 50px;
+    margin-bottom: 20px;
 }
 
 @media screen and (max-width:800px) {

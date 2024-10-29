@@ -86,7 +86,7 @@ export default {
             <section id="form-access-inputs">
                 <Input label="Digite seu CPF:" type="text" placeholder="00000000000" inputName="document" :onlyNumbers="true" :value="loginData.user" v-model="loginData.user" />
                 
-                <Input v-if="!recoverPasswordView" label="Digite sua senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="password" :onlyNumbers="false" :value="loginData.password" v-model="loginData.password" class="mt-1p5" />
+                <Input v-if="!recoverPasswordView" label="Digite sua senha:" type="password" placeholder="●●●●●●●●●●●●" inputName="password" :onlyNumbers="false" :value="loginData.password" v-model="loginData.password" class="mt-1p5" :visibilyPassword="true" />
 
                 <Button v-if="!recoverPasswordView" type="primary" placeholder="Conecte-se" class="mt-3" @buttonPressed="login" />
                 <Button v-if="recoverPasswordView" type="primary" placeholder="Solicitar recuperação" class="mt-3" @buttonPressed="recoverPassword" />

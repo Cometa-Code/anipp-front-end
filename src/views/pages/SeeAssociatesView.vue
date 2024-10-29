@@ -41,6 +41,7 @@ export default {
             addAssociateRoleSelect: [],
             editAssociateRoleSelect: [],
             editAssociateNationalitySelect: [],
+            financialLifeStatusFilter: 'todos',
             addAssociateNationalitySelect: [
                 {
                     name: 'Brasileiro',
@@ -87,6 +88,11 @@ export default {
                 {
                     name: 'Divorciado',
                     value: 'Divorciado',
+                    selected: false,
+                },
+                {
+                    name: 'Falecido',
+                    value: 'Falecido',
                     selected: false,
                 },
             ],
@@ -214,11 +220,17 @@ export default {
 
         this.addAssociateRoleSelect.push(
             {
+                name: 'Associado e Administrador',
+                value: 'adminandassociate',
+                selected: false
+            },
+            {
                 name: 'Associado',
                 value: 'associate',
                 selected: true
             }
         );
+
 
         this.getNextPage();
     },
@@ -297,7 +309,7 @@ export default {
             this.loader = true;
             this.loadingTable = true;
 
-            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}`)
+            this.$axios.get(`/user/associates?items_per_page=${this.itemsPerPage}&page=${this.actualPage + 1}&terms_filter=${this.filterTerms}&financial_life_filter=${this.financialLifeStatusFilter}`)
             .then(res => {
                 const data = res.data.data;
                 console.log(data);
@@ -410,11 +422,17 @@ export default {
                 
                 this.editAssociateRoleSelect.push(
                     {
+                        name: 'Associado e Administrador',
+                        value: 'adminandassociate',
+                        selected: this.editAssociateData.role == 'admin' && this.editAssociateData.is_associate == 1 ? true : false
+                    },
+                    {
                         name: 'Associado',
                         value: 'associate',
                         selected: this.editAssociateData.role == 'associate' ? true : false
                     }
                 );
+                
 
                 this.editAssociateMaritalSelect = [
                     {
@@ -446,6 +464,11 @@ export default {
                         name: 'Divorciado',
                         value: 'Divorciado',
                         selected: this.editAssociateData.marital_status == 'Divorciado' ? true : false,
+                    },
+                    {
+                        name: 'Falecido',
+                        value: 'Falecido',
+                        selected: this.editAssociateData.marital_status == 'Falecido' ? true : false,
                     },
                 ];
 
@@ -626,9 +649,12 @@ export default {
             <p>Número do banco: <span>{{ selectedAssociate.code_bank }}</span></p>
             <p>Conta bancária: <span>{{ selectedAssociate.account_bank }}</span></p>
             <p>Agência bancária: <span>{{ selectedAssociate.agency_bank }}</span></p>
-            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation != "Indefinido" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
+            <p>Status financeiro: <span :class="selectedAssociate.financial_situation == 'Adimplente' ? 'green' : selectedAssociate.financial_situation == 'Inadimplente' ? 'red' : ''">{{ selectedAssociate.financial_situation == "Adimplente" ? selectedAssociate.financial_situation : `Pendência - ${selectedAssociate.financial_situation_description}` }}</span></p>
             <p>Data de Nascimento: <span>{{ selectedAssociate.date_of_birth }}</span></p>
             <p>Status da conta: <span :class="selectedAssociate.is_active  ? 'green' : 'red'">{{ selectedAssociate.is_active == 1 ? 'Ativo' : 'Inativo' }}</span></p>
+            <p>Dependentes:</p>
+            <span v-if="selectedAssociate.dependents.length > 0" v-for="associate in selectedAssociate.dependents">{{ associate.name }} | {{ associate.degree_of_kinship }} | {{ associate.phone }} | {{ associate.email }}<br></span>
+            <span v-else>Não informados!<br></span>
         </div>
     </SimpleModal>
 
@@ -644,8 +670,8 @@ export default {
                 <Input type="text" label="Nome do associado*" placeholder="João Pedro Alves" :value="addAssociateData.name" v-model="addAssociateData.name" />
                 <div class="form-add-associate-line-space"></div>
                 <Input type="email" label="E-mail do associado*" placeholder="joaopedroalves@anipp.org.br" :value="addAssociateData.email" v-model="addAssociateData.email" />
-                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
-                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
+                <div v-if="userData.role != 'associate'" class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role != 'associate'" label="Cargo do usuário*" :options="addAssociateRoleSelect" :value="addAssociateData.role" v-model="addAssociateData.role" />
             </div>
 
             <div class="form-add-associate-line">
@@ -653,7 +679,7 @@ export default {
                 <div class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="addAssociateData.registration_number" v-model="addAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
+                <Select label="Paga para outro associado" :options="addAssociateOtherAssociationsSelect" :value="addAssociateData.other_associations" v-model="addAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-line">
@@ -721,13 +747,13 @@ export default {
             </div>
 
             <div class="form-add-associate-line">
-                <Input v-if="editAssociateData.financial_situation == 'Indefinido'" type="text" label="Descrição da pendência financeira" placeholder="8.547.856-7" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
-                <div v-if="editAssociateData.financial_situation == 'Indefinido'" class="form-add-associate-line-space"></div>
-                <Select v-if="userData.role == 'superadmin'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
-                <div v-if="userData.role == 'superadmin'" class="form-add-associate-line-space"></div>
+                <Input v-if="editAssociateData.financial_situation != 'Adimplente'" type="text" label="Descrição da pendência" placeholder="Dezembro de 2022" :value="editAssociateData.financial_situation_description" v-model="editAssociateData.financial_situation_description" />
+                <div v-if="editAssociateData.financial_situation != 'Adimplente'" class="form-add-associate-line-space"></div>
+                <Select v-if="userData.role != 'associate'" label="Cargo do usuário*" :options="editAssociateRoleSelect" :value="editAssociateData.role" v-model="editAssociateData.role" />
+                <div v-if="userData.role != 'associate'" class="form-add-associate-line-space"></div>
                 <Input type="text" label="Matrícula ECT*" placeholder="8.547.856-7" :value="editAssociateData.registration_number" v-model="editAssociateData.registration_number" />
                 <div class="form-add-associate-line-space"></div>
-                <Select label="Outros associados" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
+                <Select label="Paga para outro associado" :options="editAssociateOtherAssociationsSelect" :value="editAssociateData.other_associations" v-model="editAssociateData.other_associations" />
             </div>
 
             <div class="form-add-associate-line">
@@ -773,7 +799,7 @@ export default {
             <div class="form-add-associate-line">
                 <Input type="text" label="Identificador do extrato (Para PIX)" placeholder="000CPFDASTRANSFERENCIAS" :onlyNumbers="true" :value="editAssociateData.bank_identifier_a" v-model="editAssociateData.bank_identifier_a" />
                 <div class="form-add-associate-line-space"></div>
-                <Input type="text" label="Identificador do extrato (Para Transfêrencias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
+                <Input type="text" label="Identificador do extrato (Para Transferêcias)" placeholder="512417846541658486" :onlyNumbers="true" :value="editAssociateData.bank_identifier_b" v-model="editAssociateData.bank_identifier_b" />
             </div>
 
             <div class="form-add-associate-button">
@@ -786,7 +812,15 @@ export default {
         <Head title="Associados" />
         <p v-if="!loadingTable" id="see-associates-total">Total de associados: <span id="see-associates-total-number">{{ totalItems }}</span></p>
         <div v-if="!loadingTable" class="button-add-associate">
-            <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="+ Adicionar associado" />
+            <Button type="primary" @buttonPressed="openAddAssociateModal" placeholder="Adicionar associado" />
+        </div>
+
+        <div class="filter-financial-life">
+            <div @click="financialLifeStatusFilter = 'todos'" :class="[financialLifeStatusFilter == 'todos' ? 'filter-active' : '', 'filter']">Todos</div>
+            <div @click="financialLifeStatusFilter = 'adimplente'" :class="[financialLifeStatusFilter == 'adimplente' ? 'filter-active' : '','filter']">Adimplente</div>
+            <div @click="financialLifeStatusFilter = 'inadimplente'" :class="[financialLifeStatusFilter == 'inadimplente' ? 'filter-active' : '','filter']">Inadimplente</div>
+            <div @click="financialLifeStatusFilter = 'indefinido'" :class="[financialLifeStatusFilter == 'indefinido' ? 'filter-active' : '','filter']">Pendência</div>
+            <div @click="financialLifeStatusFilter = 'falecido'" :class="[financialLifeStatusFilter == 'falecido' ? 'filter-active' : '','filter']">Falecido</div>
         </div>
 
         <div class="search-associate-div">
@@ -944,6 +978,23 @@ export default {
 .delete-associate p {
     margin-bottom: 10px;
     color: rgb(38, 38, 38);
+}
+
+.filter-financial-life {
+    margin: 20px 0px;
+    display: flex;
+    align-items: center;
+}
+
+.filter {
+    padding: 8px 14px;
+    border: 1px solid #C0AB61;
+    cursor: pointer
+}
+
+.filter-active {
+    background-color: #C0AB61;
+    color: #fff;
 }
 
 @media screen and (max-width:800px) {

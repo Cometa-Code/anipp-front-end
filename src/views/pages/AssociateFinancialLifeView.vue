@@ -19,6 +19,7 @@ export default {
             actualPage: 0,
             totalItems: 0,
             associateTableCategories: [
+                'ID',
                 'Meio do crédito',
                 'Tipo de pagamento',
                 'Data do crédito',
@@ -28,6 +29,9 @@ export default {
                 'Encargos',
                 'Total',
                 'Observações',
+            ],
+            associatesTableActions: [
+                'trash',
             ],
             totalSumPayments: 0,
             totalCreditValue: 0,
@@ -42,7 +46,10 @@ export default {
             associate_name: '',
             payments: [],
             paymentsFullInfos: [],
+            modalConfirmDelete: false,
             modalAddPayment: false,
+            selectedPaymentToDelete: null,
+            selectedAssociateToDelete: null,
             addPaymentData: {
                 payment_method: '',
                 payment_type: 'Mensalidade',
@@ -94,6 +101,22 @@ export default {
                 "type": type == 'info' ? 'info' : type == 'warning' ? 'warning' : type == 'error' ? 'error' : type == 'success' ? 'success' : 'default',
             });
         },
+        deletePayment() {
+            this.loader = true;
+            this.$axios.delete(`/payments/${this.selectedPaymentToDelete.id}`)
+            .then(res => {
+                this.notify('Pagamento deletado com sucesso!', 'success');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(err => {
+                this.notify('Ocorreu um erro ao deletar um pagamento!', 'error');
+
+                this.loader = false;
+            });
+        },
         getCurrentDate() {
             var data = new Date();
 
@@ -103,6 +126,21 @@ export default {
 
             var formatedDate = year + '-' + monthly + '-' + day;
             return formatedDate;
+        },
+        paymentsTableClickAction(event) {
+            if (event.eventType == 'trash') {
+                console.log(event.data)
+                for (let i = 0; i < this.paymentsFullInfos.length; i++) {
+                    if (this.paymentsFullInfos[i].id === event.data[0]) {
+                        this.selectedPaymentToDelete = {
+                            id: this.paymentsFullInfos[i].id,
+                            user_id: this.paymentsFullInfos[i].user_id
+                        }
+                    }
+                }
+
+                this.modalConfirmDelete = true;
+            }
         },
         getNextPaymentFilter() {
             this.loadingTable = true;
@@ -148,6 +186,7 @@ export default {
                 data.data.data.forEach((item) => {
                     let payments = [];
 
+                    payments.push(item.id); 
                     payments.push(item.payment_method); 
                     payments.push(item.payment_type);
                     payments.push(`${item.payment_date[8]}${item.payment_date[9]}/${item.payment_date[5]}${item.payment_date[6]}/${item.payment_date[0]}${item.payment_date[1]}${item.payment_date[2]}${item.payment_date[3]}`);
@@ -216,6 +255,7 @@ export default {
                 data.data.data.forEach((item) => {
                     let payments = [];
 
+                    payments.push(item.id); 
                     payments.push(item.payment_method); 
                     payments.push(item.payment_type);
                     payments.push(`${item.payment_date[8]}${item.payment_date[9]}/${item.payment_date[5]}${item.payment_date[6]}/${item.payment_date[0]}${item.payment_date[1]}${item.payment_date[2]}${item.payment_date[3]}`);
@@ -311,6 +351,17 @@ export default {
 <template>
     <Loader v-if="loader" />
 
+    <SimpleModal v-if="modalConfirmDelete" @close="modalConfirmDelete = false" title="Deseja deletar?" :hasOkButton="true" okButtonDescription="Confirmar" @clickOkButton="deletePayment">
+        <div class="warning-delete-content">
+            <h1>Atenção!</h1>
+
+            <p>Essa é uma ação que não pode ser revertida!</p>
+            <p>Só delete caso tenha certeza!</p>
+            
+            <div id="space"></div>
+        </div>
+    </SimpleModal>
+
     <section v-if="modalAddPayment" class="bg-add-associate">
         <Head title="Pagamento manual" />
 
@@ -373,13 +424,15 @@ export default {
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Honorários: <span id="see-associates-total-number">R$ {{ parseFloat(totalFees).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Valores pagos por Encargos: <span id="see-associates-total-number">R$ {{ parseFloat(totalCharges).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
         <p v-if="!loadingTable" id="see-associates-total">Soma total dos valores pagos: <span id="see-associates-total-number">R$ {{ parseFloat(totalSumPayments).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span></p>
-        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation != 'Indefinido' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
+        <p v-if="!loadingTable" id="see-associates-total">Status da vida financeira: <span :class="financial_situation == 'Adimplente' ? 'green' : financial_situation == 'Inadimplente' ? 'red' : ''">{{ financial_situation == 'Adimplente' ? financial_situation : `Pendência - ${financial_situation_description}` }}</span></p>
 
         <div v-if="!loadingTable" class="button-add-associate">
-            <Button type="primary" @buttonPressed="openAddPaymentModal" placeholder="+ Adicionar pagamento" />
+            <Button type="primary" @buttonPressed="openAddPaymentModal" placeholder="Adicionar pagamento" />
         </div>
 
-        <Table v-if="!loadingTable" :hasActions="false" :hasNextPage="hasNextPage" :headers="associateTableCategories" :contents="payments" @loadMore="getNextPayment" />
+        <Table v-if="!loadingTable" :hasActions="true" :hasNextPage="hasNextPage" :headers="associateTableCategories" 
+        :actions="associatesTableActions" :contents="payments" @loadMore="getNextPayment"
+        @clickAction="paymentsTableClickAction" />
     </section>
 </template>
 
@@ -522,6 +575,27 @@ export default {
 .return-to-page:hover p {
     color: #b2952d;
     transition: .2s;
+}
+
+.warning-delete-content {
+    width: 100%;
+    text-align: center;
+}
+
+.warning-delete-content h1 {
+    font-size: 24px;
+    color: rgb(255, 61, 61);
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.warning-delete-content #space {
+    margin-bottom: 20px;
+}
+
+.warning-delete-content p {
+    font-size: 18px;
+    margin-bottom: 5px;
 }
 
 @media screen and (max-width:800px) {
