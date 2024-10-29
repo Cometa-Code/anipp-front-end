@@ -21,7 +21,7 @@ export default {
             reportsListCategories: [
                 {
                     name: "Ação ANIPP - Documentos",
-                    isActive: true,
+                    isActive: false,
                     data: [],
                 },
                 {
