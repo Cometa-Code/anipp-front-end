@@ -37,6 +37,7 @@ export default {
         this.$axios.get(`user/recover-password/verify-token/${token}`)
         .then(res => {
             this.viewUI = true;
+            console.log('token correto')
         })
         .catch(err => {
             return this.$router.push('/acessar');

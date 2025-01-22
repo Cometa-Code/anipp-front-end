@@ -7,7 +7,12 @@ export default {
       (config) => {
         const token = localStorage.getItem('UAUTHTKKEY');
   
+        if (config.url && config.url.includes('user/recover-password/verify-token')) {
+          return config;
+        }
+
         if (!token) {
+          console.log('sem token app')
           this.$router.push('/login')
         }
   
